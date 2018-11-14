@@ -1,0 +1,2 @@
+eclipse.preferences.version=1
+libraries=["RotaryEncoder","NeoNextion",{"package"\:"arduino","platform"\:"avr","library"\:"SoftwareSerial"}]
