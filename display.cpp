@@ -2,17 +2,13 @@
  * display.cpp
  *
  *  Created on: 17 oct. 2018
- *      Author: Devialet
+ *      Author: Valentin
  */
 
-//#define NEOSWSERIAL_EXTERNAL_PCINT
 
 #include <Nextion.h>
 #include <NextionPage.h>
 #include <NextionText.h>
-#include <NextionVariableNumeric.h>
-#include <NextionVariableString.h>
-//#include <NeoSWSerial.h>
 #include <SoftwareSerial.h>
 #include <NextionButton.h>
 
@@ -23,7 +19,6 @@
 
 #define BAUD 9600
 
-//NeoSWSerial nextionSerial(10, 11); // RX (blue), TX(yellow)
 SoftwareSerial nextionSerial(10, 11); // RX (blue), TX(yellow)
 
 
@@ -35,29 +30,30 @@ Nextion nex(nextionSerial);
 
 #define nb_page	page_recuit + 1
 
-NextionVariableNumeric 	bt_palier1[nb_page]			{{nex, 1, 7, "bt2"},{nex, 2, 7, "bt2"},{nex, 3, 7, "bt2"}};
-NextionButton 			bt_palier1_txt[nb_page]		{{nex, 1, 7, "bt2"},{nex, 2, 7, "bt2"},{nex, 3, 7, "bt2"}};
-NextionVariableNumeric 	bt_palier2[nb_page]			{{nex, 1, 10, "bt5"},{nex, 2, 10, "bt5"},{nex, 3, 10, "bt5"}};
-NextionButton 			bt_palier2_txt[nb_page]		{{nex, 1, 10, "bt5"},{nex, 2, 10, "bt5"},{nex, 3, 10, "bt5"}};
+NextionButton 			petit_feu					{nex, 0, 2, "t0"};
+NextionButton 			grand_feu					{nex, 0, 3, "t1"};
+NextionButton 			recuit						{nex, 0, 4, "t2"};
 
-NextionVariableNumeric bt_pente1(nex, 2, 9, "bt4");
-NextionButton bt_pente1_txt(nex, 2, 9, "bt4");
-NextionVariableNumeric bt_pente2(nex, 2, 8, "bt3");
-NextionButton bt_pente2_txt(nex, 2, 8, "bt3");
+NextionButton 			bt_palier1_txt[nb_page]		{{nex, 1, 10, "bt5"},{nex, 2, 10, "bt5"},{nex, 3, 10, "bt5"}};
+NextionButton 			bt_palier2_txt[nb_page]		{{nex, 1, 7, "bt2"},{nex, 2, 7, "bt2"},{nex, 3, 7, "bt2"}};
 
-NextionVariableNumeric bt_temp_1(nex, 2, 6, "bt1");
-NextionButton bt_temp_1_txt(nex, 2, 6, "bt1");
-NextionVariableNumeric bt_temp_2(nex, 2, 5, "bt0");
-NextionButton bt_temp_2_txt(nex, 2, 5, "bt0");
+NextionButton			bt_pente1_txt[nb_page]		{{nex, 1, 9, "bt4"},{nex, 2, 9, "bt4"},{nex, 3, 9, "bt4"}};
+NextionButton 			bt_pente2_txt[nb_page]		{{nex, 1, 8, "bt3"},{nex, 2, 8, "bt3"},{nex, 3, 8, "bt3"}};
 
-NextionText time_total_txt(nex, 2, 2, "t4");
+NextionButton 			bt_temp_1_txt[nb_page]		{{nex, 1, 6, "bt1"},{nex, 2, 6, "bt1"},{nex, 3, 6, "bt1"}};
+NextionButton 			bt_temp_2_txt[nb_page]		{{nex, 1, 5, "bt0"},{nex, 2, 5, "bt0"},{nex, 3, 5, "bt0"}};
 
-#define time_palier1_index 	0
-#define time_palier2_index 	1
-#define pente1_index 		2
-#define pente2_index 		3
-#define temp_1_index 		4
-#define temp_2_index 		5
+NextionText 			time_total_txt[nb_page]		{{nex, 1, 2, "t4"},{nex, 2, 2, "t4"},{nex, 3, 2, "t4"}};
+
+NextionButton 			bt_start[nb_page]				{{nex, 1, 3, "button_start"},{nex, 2, 3, "button_start"},{nex, 3, 3, "button_start"}};
+
+#define no_button_index 	0
+#define time_palier1_index 	1
+#define time_palier2_index 	2
+#define pente1_index 		3
+#define pente2_index 		4
+#define temp_1_index 		5
+#define temp_2_index 		6
 
 #define nb_variable	(temp_2_index + 1)
 
@@ -68,19 +64,22 @@ NextionText time_total_txt(nex, 2, 2, "t4");
 #define nb_page	page_recuit + 1
 
 long variable[nb_page][nb_variable] = {
-	{20,
+	{0,
+	20,
 	90,
 	100,
 	500,
-	400,
+	200,
 	800},
-	{5,
+	{0,
+	5,
 	90,
 	200,
 	500,
 	400,
 	1200},
-	{60,
+	{0,
+	60,
 	120,
 	10,
 	50,
@@ -92,10 +91,242 @@ static void display_refresh_value(int forced,int page);
 static void display_encoder(int index,int page);
 static void check_value(int index, int page);
 
+static uint8_t button_index,page_index;
+
+void page1_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH) {
+		page_index = 1;
+		display_refresh_value(true,page_index);
+	}
+}
+
+void page2_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH) {
+		page_index = 2;
+		display_refresh_value(true,page_index);
+	}
+}
+
+void page3_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH){
+		page_index = 2;
+		display_refresh_value(true,page_index);
+	}
+}
+
+
+void bt_palier1_page1_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 1;
+		button_index = time_palier1_index;
+	}
+}
+
+void bt_palier1_page2_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 2;
+		button_index = time_palier1_index;
+	}
+}
+
+void bt_palier1_page3_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 3;
+		button_index = time_palier1_index;
+	}
+}
+
+void bt_palier2_page1_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 1;
+		button_index = time_palier2_index;
+	}
+}
+
+void bt_palier2_page2_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 2;
+		button_index = time_palier2_index;
+	}
+}
+
+void bt_palier2_page3_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 3;
+		button_index = time_palier2_index;
+	}
+}
+
+void bt_pente1_page1_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 1;
+		button_index = pente1_index;
+	}
+}
+
+void bt_pente1_page2_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 2;
+		button_index = pente1_index;
+	}
+}
+
+void bt_pente1_page3_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 3;
+		button_index = pente1_index;
+	}
+}
+
+void bt_pente2_page1_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 1;
+		button_index = pente2_index;
+	}
+}
+
+void bt_pente2_page2_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 2;
+		button_index = pente2_index;
+	}
+}
+
+void bt_pente2_page3_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 3;
+		button_index = pente2_index;
+	}
+}
+
+void bt_temp_1_page1_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 1;
+		button_index = temp_1_index;
+	}
+}
+
+void bt_temp_1_page2_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 2;
+		button_index = temp_1_index;
+	}
+}
+
+
+void bt_temp_1_page3_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 3;
+		button_index = temp_1_index;
+	}
+}
+
+void bt_temp_2_page1_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 1;
+		button_index = temp_2_index;
+	}
+}
+
+void bt_temp_2_page2_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 2;
+		button_index = temp_2_index;
+	}
+}
+
+
+void bt_temp_2_page3_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 3;
+		button_index = temp_2_index;
+	}
+}
+
+void bt_start_Callback(NextionEventType type, INextionTouchable *widget)
+{
+	if (type == NEX_EVENT_PUSH)
+	{
+		page_index = 4;
+	}
+}
+
 void init_nextion(void){
+	int i;
 	nextionSerial.begin(BAUD);
 	nex.init();
-	delay(2000);
+
+	petit_feu.attachCallback(&page1_Callback);
+	grand_feu.attachCallback(&page2_Callback);
+	recuit.attachCallback(&page3_Callback);
+
+	bt_palier1_txt[0].attachCallback(&bt_palier1_page1_Callback);
+	bt_palier1_txt[1].attachCallback(&bt_palier1_page2_Callback);
+	bt_palier1_txt[2].attachCallback(&bt_palier1_page3_Callback);
+
+	bt_palier2_txt[0].attachCallback(&bt_palier2_page1_Callback);
+	bt_palier2_txt[1].attachCallback(&bt_palier2_page2_Callback);
+	bt_palier2_txt[2].attachCallback(&bt_palier2_page3_Callback);
+
+	bt_pente1_txt[0].attachCallback(&bt_pente1_page1_Callback);
+	bt_pente1_txt[1].attachCallback(&bt_pente1_page2_Callback);
+	bt_pente1_txt[2].attachCallback(&bt_pente1_page3_Callback);
+
+	bt_pente2_txt[0].attachCallback(&bt_pente2_page1_Callback);
+	bt_pente2_txt[1].attachCallback(&bt_pente2_page2_Callback);
+	bt_pente2_txt[2].attachCallback(&bt_pente2_page3_Callback);
+
+	bt_temp_1_txt[0].attachCallback(&bt_temp_1_page1_Callback);
+	bt_temp_1_txt[1].attachCallback(&bt_temp_1_page2_Callback);
+	bt_temp_1_txt[2].attachCallback(&bt_temp_1_page3_Callback);
+
+	bt_temp_2_txt[0].attachCallback(&bt_temp_2_page1_Callback);
+	bt_temp_2_txt[1].attachCallback(&bt_temp_2_page2_Callback);
+	bt_temp_2_txt[2].attachCallback(&bt_temp_2_page3_Callback);
+
+	bt_start[0].attachCallback(&bt_start_Callback);
+	bt_start[1].attachCallback(&bt_start_Callback);
+	bt_start[2].attachCallback(&bt_start_Callback);
+
 }
 
 static void display_refresh_value(int forced,int page){
@@ -104,6 +335,11 @@ static void display_refresh_value(int forced,int page){
 	int i;
 	char tmp[10];
 	long time_total_value;
+
+	if(page == 0)
+		return;
+	else
+		page = page - 1;
 
 	for(i = 0; i < nb_variable;i++){
 		if(( variable[page][i] != previous_variable[page][i] ) || forced){
@@ -118,65 +354,46 @@ static void display_refresh_value(int forced,int page){
 				break;
 			case pente1_index :
 				sprintf(tmp,"%d °C/h",variable[page][i]);
-				bt_pente1_txt.setText(tmp);
+				bt_pente1_txt[page].setText(tmp);
 				break;
 			case pente2_index :
 				sprintf(tmp,"%d °C/h",variable[page][i]);
-				bt_pente2_txt.setText(tmp);
+				bt_pente2_txt[page].setText(tmp);
 				break;
 			case temp_1_index :
 				sprintf(tmp,"%d °C",variable[page][i]);
-				bt_temp_1_txt.setText(tmp);
+				bt_temp_1_txt[page].setText(tmp);
 				break;
 			case temp_2_index :
 				sprintf(tmp,"%d °C",variable[page][i]);
-				bt_temp_2_txt.setText(tmp);
+				bt_temp_2_txt[page].setText(tmp);
 				break;
 			default :
 				break;
 			}
+			//Serial.println(tmp);
 			previous_variable[page][i] = variable[page][i];
 			time_total_value = 	variable[page][time_palier1_index] +
 								variable[page][time_palier2_index] +
 								(variable[page][temp_1_index]/variable[page][pente1_index])*60 +
 								((variable[page][temp_2_index] - variable[page][temp_1_index])/variable[page][pente2_index])*60;
 			sprintf(tmp,"%dh%02d",(int)(time_total_value/60),(int)(time_total_value%60));
-			time_total_txt.setText(tmp);
+			time_total_txt[page].setText(tmp);
 		}
 	}
 }
 
-void display_refresh(void){
-	int page;
-	static int previous_page;
+uint8_t display_refresh(void){
 
-	page = nex.getCurrentPage();
+	nex.poll();
 
-	Serial.println(page);
+	if (page_index < 4) {
+		display_encoder(button_index,page_index);
+		display_refresh_value(false,page_index);
+	}
 
-	if((page> 0) && (page < 3)){
-		//page -= 1;
-		if(page != previous_page){
-			previous_page = page;
-			display_refresh_value(true,page);
-		}
-	//	if(page == 1){
+	return page_index;
 
-			if(bt_palier1[page].getValue())
-				display_encoder(time_palier1_index,page);
-			if(bt_palier2[page].getValue())
-				display_encoder(time_palier2_index,page);
-			if(bt_pente1.getValue())
-				display_encoder(pente1_index,page);
-			if(bt_pente2.getValue())
-				display_encoder(pente2_index,page);
-			if(bt_temp_1.getValue())
-				display_encoder(temp_1_index,page);
-			if(bt_temp_2.getValue())
-				display_encoder(temp_2_index,page);
-		}
-		display_refresh_value(false,page);
-	//}
 }
 
 static void display_encoder(int index,int page){
@@ -184,6 +401,10 @@ static void display_encoder(int index,int page){
 	int current_position,delta = 0;
 	static bool first_time_flag = 1;
 
+	if(page == 0)
+		return;
+	else
+		page = page - 1;
 
 	if(first_time_flag){
 		newPos = position_encoder();
@@ -197,11 +418,11 @@ static void display_encoder(int index,int page){
 		break;
 	case pente1_index :
 	case pente2_index :
-		delta = 10;
+		delta = 5;
 		break;
 	case temp_1_index :
 	case temp_2_index :
-		delta = 50;
+		delta = 10;
 		break;
 	default :
 		break;
@@ -212,18 +433,20 @@ static void display_encoder(int index,int page){
 
 	check_value(index,page);
 
-	Serial.println("coucou");
-	Serial.println(index);
-	Serial.println(page);
-	Serial.println(variable[page][index]);
-	Serial.println("end");
+//	Serial.println("coucou");
+//	Serial.println(index);
+//	Serial.println(page);
+//	Serial.println(variable[page][index]);
+//	Serial.println("end");
 }
 
 static void check_value(int index, int page){
+
+	if (variable[page][index] < 0)
+		variable[page][index] = 0;
+
 	if(( variable[page][temp_1_index] > variable[page][temp_2_index] ) && ( index == temp_1_index))
 		variable[page][temp_1_index] = variable[page][temp_2_index];
 	if(( variable[page][temp_2_index] < variable[page][temp_1_index] ) && ( index == temp_2_index))
 		variable[page][temp_2_index] = variable[page][temp_1_index];
 }
-
-

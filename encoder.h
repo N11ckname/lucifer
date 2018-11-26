@@ -2,7 +2,7 @@
  * encoder.h
  *
  *  Created on: 17 oct. 2018
- *      Author: Devialet
+*      Author: Valentin
  */
 
 #ifndef ENCODER_H_

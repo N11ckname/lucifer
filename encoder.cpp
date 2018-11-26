@@ -2,7 +2,7 @@
  * encoder.cpp
  *
  *  Created on: 17 oct. 2018
- *      Author: Devialet
+*      Author: Valentin
  */
 
 #include "encoder.h"
