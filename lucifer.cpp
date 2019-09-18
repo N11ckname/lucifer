@@ -3,7 +3,8 @@
 
 #include "encoder.h"
 #include "display.h"
-
+#include "temperature.h"
+#include "regulation.h"
 
 void setup()
 {
@@ -11,6 +12,8 @@ void setup()
 	Serial.println("Lucifer init");
 	init_nextion();
 	init_encoder();
+	init_temp_sensor();
+	init_temp_irq();
 	pinMode(7,OUTPUT);
 	pinMode(5,OUTPUT);
 
@@ -28,8 +31,10 @@ void loop()
 	  toggle = !toggle;
 	  digitalWrite(7,toggle);
 	  page = display_refresh();
-	  if (page ==  4)
-		  Serial.print("start");
+	  if (run_flag)
+	  {
+	      burn_regulation();
+	  }
 
 } // loop ()
 

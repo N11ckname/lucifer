@@ -12,5 +12,6 @@
 void init_nextion(void);
 uint8_t display_refresh(void);
 
+extern bool run_flag;
 
 #endif /* DISPLAY_H_ */

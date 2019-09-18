@@ -1,2 +1,2 @@
 eclipse.preferences.version=1
-libraries=["RotaryEncoder","NeoNextion",{"package"\:"arduino","platform"\:"avr","library"\:"SoftwareSerial"}]
+libraries=["RotaryEncoder",{"package"\:"arduino","platform"\:"avr","library"\:"EEPROM"},"NeoNextion",{"package"\:"arduino","platform"\:"avr","library"\:"SPI"},"Adafruit MAX31856 library",{"package"\:"arduino","platform"\:"avr","library"\:"SoftwareSerial"}]
