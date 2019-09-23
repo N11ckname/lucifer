@@ -5,7 +5,7 @@
  *      Author: Valentin
  */
 
-#include <Adafruit_MAX31856.h>
+#include "hardware/Adafruit_MAX31856.h"
 
 // Use software SPI: CS, DI, DO, CLK
 Adafruit_MAX31856 maxthermo = Adafruit_MAX31856(8, 9, 12, 13);
