@@ -13,7 +13,7 @@ void setup()
 	init_nextion();
 	init_encoder();
 	init_temp_sensor();
-	//init_temp_irq();
+	init_temp_irq();
 	pinMode(7,OUTPUT);
 	pinMode(5,OUTPUT);
 
@@ -26,10 +26,7 @@ void setup()
 // Read the current position of the encoder and print out when changed.
 void loop()
 {
-    uint8_t page;
-
-
-    page = display_refresh();
+    display_refresh();
     if (run_flag)
     {
         burn_regulation();

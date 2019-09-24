@@ -61,13 +61,13 @@ float read_temp(void)
     else {
         temp = maxthermo.readThermocoupleTemperature();
         temp_lpf = temp_lpf - ((temp_lpf - temp) * 0.25);
-        Serial.print(millis());
-        Serial.print(" : ");
-        Serial.print(maxthermo.readCJTemperature());
-        Serial.print(" : ");
-        Serial.print(temp_lpf);
-        Serial.print(" : ");
-        Serial.println(temp);
+//        Serial.print(millis());
+//        Serial.print(" : ");
+//        Serial.print(maxthermo.readCJTemperature());
+//        Serial.print(" : ");
+//        Serial.print(temp_lpf);
+//        Serial.print(" : ");
+//        Serial.println(temp);
 
     }
         return (temp_lpf);

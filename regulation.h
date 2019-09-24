@@ -17,6 +17,14 @@ extern int temp_2_extern;
 extern unsigned long start_time;
 extern int step;
 
+typedef enum {
+    step_one,
+    step_two,
+    step_three,
+    step_four,
+    step_five
+};
+
 void burn_regulation(void);
 void burn_stop(void);
 
