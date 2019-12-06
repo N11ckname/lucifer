@@ -13,7 +13,6 @@ void init_nextion(void);
 void display_refresh(void);
 void refresh_temp(int temp, int time, int step);
 void change_page(int step);
-
-extern bool run_flag;
+void flamme_display(int on_off_flag);
 
 #endif /* DISPLAY_H_ */

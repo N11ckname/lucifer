@@ -8,8 +8,8 @@
 
 void setup()
 {
-	Serial.begin(9600);
-	Serial.println("Lucifer init");
+	Serial.begin(115200);
+	Serial.println(F("Lucifer init"));
 	init_nextion();
 	init_encoder();
 	init_temp_sensor();
@@ -19,19 +19,10 @@ void setup()
 
 } // setup()
 
-
-
-
-
 // Read the current position of the encoder and print out when changed.
 void loop()
 {
-    display_refresh();
-    if (run_flag)
-    {
-        burn_regulation();
-    }
-
+	display_refresh();
 } // loop ()
 
 // The End

@@ -5,7 +5,7 @@
  *      Author: Valentin
  */
 
-#include "hardware/Adafruit_MAX31856.h"
+#include "src/hardware/Adafruit_MAX31856.h"
 
 // Use software SPI: CS, DI, DO, CLK
 Adafruit_MAX31856 maxthermo = Adafruit_MAX31856(8, 9, 12, 13);
@@ -48,14 +48,14 @@ float read_temp(void)
 
     if (fault) {
         Serial.println(fault);
-        if (fault & MAX31856_FAULT_CJRANGE) Serial.println("Cold Junction Range Fault");
-        if (fault & MAX31856_FAULT_TCRANGE) Serial.println("Thermocouple Range Fault");
-        if (fault & MAX31856_FAULT_CJHIGH)  Serial.println("Cold Junction High Fault");
-        if (fault & MAX31856_FAULT_CJLOW)   Serial.println("Cold Junction Low Fault");
-        if (fault & MAX31856_FAULT_TCHIGH)  Serial.println("Thermocouple High Fault");
-        if (fault & MAX31856_FAULT_TCLOW)   Serial.println("Thermocouple Low Fault");
-        if (fault & MAX31856_FAULT_OVUV)    Serial.println("Over/Under Voltage Fault");
-        if (fault & MAX31856_FAULT_OPEN)    Serial.println("Thermocouple Open Fault");
+        if (fault & MAX31856_FAULT_CJRANGE) Serial.println(F("Cold Junction Range Fault"));
+        if (fault & MAX31856_FAULT_TCRANGE) Serial.println(F("Thermocouple Range Fault"));
+        if (fault & MAX31856_FAULT_CJHIGH)  Serial.println(F("Cold Junction High Fault"));
+        if (fault & MAX31856_FAULT_CJLOW)   Serial.println(F("Cold Junction Low Fault"));
+        if (fault & MAX31856_FAULT_TCHIGH)  Serial.println(F("Thermocouple High Fault"));
+        if (fault & MAX31856_FAULT_TCLOW)   Serial.println(F("Thermocouple Low Fault"));
+        if (fault & MAX31856_FAULT_OVUV)    Serial.println(F("Over/Under Voltage Fault"));
+        if (fault & MAX31856_FAULT_OPEN)    Serial.println(F("Thermocouple Open Fault"));
         return (0.0);
     }
     else {

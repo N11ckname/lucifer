@@ -6,12 +6,13 @@
  */
 
 
-#include "NeoNextion/Nextion.h"
-#include "NeoNextion/NextionPage.h"
-#include "NeoNextion/NextionPicture.h"
-#include "NeoNextion/NextionText.h"
+#include "src/NeoNextion/Nextion.h"
+#include "src/NeoNextion/NextionPage.h"
+#include "src/NeoNextion/NextionPicture.h"
+#include "src/NeoNextion/NextionText.h"
 
-#include "NeoNextion/NextionButton.h"
+#include "src/NeoNextion/NextionButton.h"
+#include "src/NeoNextion/NextionDualStateButton.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -19,8 +20,8 @@
 #include "encoder.h"
 #include "regulation.h"
 
-#include "hardware/EEPROM.h"
-#include "hardware/SoftwareSerial.h"
+#include "src/hardware/EEPROM.h"
+#include "src/hardware/SoftwareSerial.h"
 
 #define BAUD 9600
 
@@ -38,45 +39,47 @@ Nextion nex(nextionSerial);
 NextionPage             accueil_pg          (nex, 0, 0, "accueil");
 NextionPage             prepare_feu_pg      (nex, 1, 0, "prepare_feu");
 NextionPage             phase1_pg           (nex, 2, 0, "phase1");
-NextionPage             phase2_pg           (nex, 3, 0, "phase2");
-NextionPage             cooked_pg           (nex, 4, 0, "cooked");
+NextionPage             phase1_pause_pg     (nex, 3, 0, "phase1_pause");
+NextionPage             phase2_pg           (nex, 4, 0, "phase2");
+NextionPage             phase2_pause_pg     (nex, 5, 0, "phase2_pause");
+NextionPage             cooked_pg           (nex, 6, 0, "cooked");
 
-NextionButton 			petit_feu_bt        (nex, 0, 2, "t0");
-NextionButton 			grand_feu_bt		(nex, 0, 3, "t1");
+NextionButton 			norm_bt       (nex, 0, 2, "t0");
+NextionButton 			trempe_bt			(nex, 0, 3, "t1");
 NextionButton 			recuit_bt			(nex, 0, 4, "t2");
-
+NextionText 				temp_pg0_txt	(nex, 0, 6, "t4");
 //page 1,2,3
 
-NextionButton 			bt_palier1_txt		(nex, 1, 9, "bt5");
-NextionButton 			bt_palier2_txt		(nex, 1, 6, "bt2");
-NextionButton			bt_pente1_txt	    (nex, 1, 8, "bt4");
-NextionButton 			bt_pente2_txt	    (nex, 1, 7, "bt3");
-NextionButton 			bt_temp_1_txt	    (nex, 1, 5, "bt1");
+NextionButton  			bt1_start					(nex, 1, 2, "button_start");
 NextionButton 			bt_temp_2_txt	    (nex, 1, 4, "bt0");
-NextionText 			time_total_txt		(nex, 1, 12, "t4");
-NextionButton 			bt_start			(nex, 1, 2, "button_start");
-NextionPicture          bt_return           (nex, 1, 10, "button_return");
+NextionButton 			bt_temp_1_txt	    (nex, 1, 5, "bt1");
+NextionButton 			bt_palier2_txt		(nex, 1, 6, "bt2");
+NextionButton 			bt_pente2_txt	    (nex, 1, 7, "bt3");
+NextionButton				bt_pente1_txt	    (nex, 1, 8, "bt4");
+NextionButton 			bt_palier1_txt		(nex, 1, 9, "bt5");
+NextionPicture      bt_return         (nex, 1, 10, "button_return");
+NextionText 				temp_txt					(nex, 1, 11, "t4");
+NextionText 				time_total_txt		(nex, 1, 13, "t1");
 
 //page 4
+NextionText 			temp_2_txt			(nex, 2, 1, "t0");
+NextionText 			temp_1_txt			(nex, 2, 2, "t1");
+NextionText 			palier1_txt			(nex, 2, 3, "t2");
+NextionText 			palier2_txt			(nex, 2, 4, "t3");
+NextionText 			temp_reel_txt		(nex, 2, 5, "t4");
+NextionText 			time_reel_txt		(nex, 2, 6, "t5");
+NextionButton 		    bt_stop_p1			(nex, 2, 7, "t6");
+NextionText 			pente1_txt			(nex, 2, 8, "t7");
+NextionText 			pente2_txt			(nex, 2, 9, "t8");
+NextionDualStateButton 	heat_txt	        (nex, 2, 11, "bt20");
+NextionDualStateButton  button		        (nex, 2, 10, "bt666");
 
-NextionText 			palier1_txt			(nex, 2, 5, "t2");
-NextionText 			palier2_txt			(nex, 2, 6, "t3");
-NextionText 			temp_1_txt			(nex, 2, 4, "t1");
-NextionText 			temp_2_txt			(nex, 2, 3, "t0");
-NextionText 			temp_reel_txt		(nex, 2, 7, "t4");
-NextionText 			time_reel_txt		(nex, 2, 8, "t5");
-NextionButton 			bt_stop_p1			(nex, 2, 9, "button_stop");
-
-NextionText             palier1_txt_p2      (nex, 3, 5, "t2");
-NextionText             palier2_txt_p2      (nex, 3, 12, "t3");
-NextionText             temp_1_txt_p2       (nex, 3, 4, "t1");
-NextionText             temp_2_txt_p2       (nex, 3, 3, "t0");
-NextionText             temp_reel_txt_p2    (nex, 3, 6, "t4");
-NextionText             time_reel_txt_p2    (nex, 3, 7, "t5");
-NextionButton           bt_stop_p2          (nex, 3, 8, "button_stop");
-
-NextionButton           bt_stop_p5          (nex, 5, 3, "t3");
-NextionText             temp_reel_txt_p5    (nex, 5, 1, "t4");
+NextionButton           bt_stop_p3          (nex, 3, 7, "t6");
+NextionButton           bt_stop_p4          (nex, 4, 7, "t6");
+NextionButton           bt_stop_p5          (nex, 5, 7, "t6");
+//page 6
+NextionText 			temp_finish_txt	(nex, 6, 1, "t4");
+NextionText 			return_txt			(nex, 6, 2, "t1");
 
 #define no_button_index 	0
 #define time_palier1_index 	1
@@ -92,15 +95,15 @@ int variable[nb_program][nb_variable] = {
 	{0,
 	20,
 	90,
-	100,
-	500,
+	30,
+	60,
 	200,
 	800},
 	{0,
 	5,
 	90,
-	200,
-	500,
+	60,
+	120,
 	400,
 	1200},
 	{0,
@@ -112,7 +115,6 @@ int variable[nb_program][nb_variable] = {
 	500}
 };
 
-bool run_flag;
 
 static void display_refresh_value(int forced,int program);
 static void display_encoder(int index,int program);
@@ -122,8 +124,10 @@ static void save_value(int index, int program);
 static void read_value(int index, int program);
 static void burn_variable_init(int program);
 
-static uint8_t button_index, program_index;
 
+
+static uint8_t button_index, program_index;
+static uint8_t run_flag;
 
 void init_variable(void)
 {
@@ -248,12 +252,12 @@ void bt_start_Callback(NextionEventType type, INextionTouchable *widget)
 {
 	if (type == NEX_EVENT_PUSH)
 	{
-	    Serial.print("Start :");
-	    phase1_pg.show();
-	    button_index = 0;
-	    display_refresh_fire_value(program_index, 0);
-	    burn_variable_init(program_index);
-		run_flag = true;
+		Serial.println(F("start"));
+		phase1_pg.show();
+		button_index = 0;
+		display_refresh_fire_value(program_index, 0);
+		burn_variable_init(program_index);
+		run_flag = 1;
 	}
 }
 
@@ -264,9 +268,9 @@ void bt_return_Callback(NextionEventType type, INextionTouchable *widget)
         button_index = 0;
         program_index = 0;
         burn_stop();
-        run_flag = false;
+        run_flag = 0;
         accueil_pg.show();
-        Serial.println("return");
+        Serial.println(F("return"));
     }
 }
 
@@ -277,7 +281,7 @@ void bt_stop_Callback(NextionEventType type, INextionTouchable *widget)
 	    button_index = 0;
 		program_index = 0;
 		burn_stop();
-		run_flag = false;
+		run_flag = 0;
 		accueil_pg.show();
         Serial.println("stop");
 	}
@@ -291,8 +295,8 @@ void init_nextion(void)
 	nextionSerial.begin(BAUD);
 	nex.init();
 
-	petit_feu_bt.attachCallback(&page1_Callback);
-	grand_feu_bt.attachCallback(&page2_Callback);
+	norm_bt.attachCallback(&page1_Callback);
+	trempe_bt.attachCallback(&page2_Callback);
 	recuit_bt.attachCallback(&page3_Callback);
 
 	bt_palier1_txt.attachCallback(&bt_palier1_Callback);
@@ -301,12 +305,13 @@ void init_nextion(void)
 	bt_pente2_txt.attachCallback(&bt_pente2_Callback);
 	bt_temp_1_txt.attachCallback(&bt_temp_1_Callback);
 	bt_temp_2_txt.attachCallback(&bt_temp_2_Callback);
-	bt_start.attachCallback(&bt_start_Callback);
+	bt1_start.attachCallback(&bt_start_Callback);
 	bt_return.attachCallback(&bt_return_Callback);
 	bt_stop_p1.attachCallback(&bt_stop_Callback);
-	bt_stop_p2.attachCallback(&bt_stop_Callback);
+	bt_stop_p3.attachCallback(&bt_stop_Callback);
+	bt_stop_p4.attachCallback(&bt_stop_Callback);
 	bt_stop_p5.attachCallback(&bt_stop_Callback);
-	Serial.println("init nextion end");
+	Serial.println(F("init nextion end"));
 
 }
 
@@ -334,11 +339,11 @@ static void display_refresh_value(int forced,int program){
 				bt_palier2_txt.setText(tmp);
 				break;
 			case pente1_index :
-				sprintf(tmp,"%d °C/h",variable[program][i]);
+			    sprintf(tmp,"%dh%02d",(int)(variable[program][i]/60),(int)(variable[program][i]%60));
 				bt_pente1_txt.setText(tmp);
 				break;
 			case pente2_index :
-				sprintf(tmp,"%d °C/h",variable[program][i]);
+			    sprintf(tmp,"%dh%02d",(int)(variable[program][i]/60),(int)(variable[program][i]%60));
 				bt_pente2_txt.setText(tmp);
 				break;
 			case temp_1_index :
@@ -356,8 +361,9 @@ static void display_refresh_value(int forced,int program){
 			previous_variable[program][i] = variable[program][i];
 			time_total_value = 	variable[program][time_palier1_index] +
 								variable[program][time_palier2_index] +
-								(variable[program][temp_1_index]/variable[program][pente1_index])*60 +
-								((variable[program][temp_2_index] - variable[program][temp_1_index])/variable[program][pente2_index])*60;
+								variable[program][pente1_index] +
+								variable[program][pente2_index];
+
 			sprintf(tmp,"%dh%02d",(int)(time_total_value/60),(int)(time_total_value%60));
 			time_total_txt.setText(tmp);
 			save_value(i, program);
@@ -373,8 +379,8 @@ static void display_refresh_fire_value(uint8_t program, int step)
         return;
     else
         program = program - 1;
-    if (step < step_two)
-    {
+    // if (step < step_two)
+    // {
         sprintf(tmp,"%dh%02d",(int)(variable[program][time_palier1_index]/60),(int)(variable[program][time_palier1_index]%60));
         palier1_txt.setText(tmp);
         sprintf(tmp,"%dh%02d",(int)(variable[program][time_palier2_index]/60),(int)(variable[program][time_palier2_index]%60));
@@ -383,16 +389,16 @@ static void display_refresh_fire_value(uint8_t program, int step)
         temp_1_txt.setText(tmp);
         sprintf(tmp,"%d °C",variable[program][temp_2_index]);
         temp_2_txt.setText(tmp);
-    } else {
-        sprintf(tmp,"%dh%02d",(int)(variable[program][time_palier1_index]/60),(int)(variable[program][time_palier1_index]%60));
-        palier1_txt_p2.setText(tmp);
-        sprintf(tmp,"%dh%02d",(int)(variable[program][time_palier2_index]/60),(int)(variable[program][time_palier2_index]%60));
-        palier2_txt_p2.setText(tmp);
-        sprintf(tmp,"%d °C",variable[program][temp_1_index]);
-        temp_1_txt_p2.setText(tmp);
-        sprintf(tmp,"%d °C",variable[program][temp_2_index]);
-        temp_2_txt_p2.setText(tmp);
-    }
+    // } else {
+    //     sprintf(tmp,"%dh%02d",(int)(variable[program][time_palier1_index]/60),(int)(variable[program][time_palier1_index]%60));
+    //     palier1_txt_p2.setText(tmp);
+    //     sprintf(tmp,"%dh%02d",(int)(variable[program][time_palier2_index]/60),(int)(variable[program][time_palier2_index]%60));
+    //     palier2_txt_p2.setText(tmp);
+    //     sprintf(tmp,"%d Â°C",variable[program][temp_1_index]);
+    //     temp_1_txt_p2.setText(tmp);
+    //     sprintf(tmp,"%d Â°C",variable[program][temp_2_index]);
+    //     temp_2_txt_p2.setText(tmp);
+    // }
 }
 
 void display_refresh(void){
@@ -403,12 +409,14 @@ void display_refresh(void){
 
     toggle = !toggle;
     digitalWrite(7,toggle);
-
-
-	if ((program_index > 0) || (program_index < 4)) {
-		display_encoder(button_index, program_index);
-		display_refresh_value(false, program_index);
+    if (run_flag) {
+        burn_regulation();
+    } else {
+        display_encoder(button_index, program_index);
+        display_refresh_value(false, program_index);
 	}
+
+
 }
 
 static void display_encoder(int index, int program){
@@ -434,7 +442,7 @@ static void display_encoder(int index, int program){
 		break;
 	case pente1_index :
 	case pente2_index :
-		delta = 10;
+		delta = 1;
 		break;
 	case temp_1_index :
 	case temp_2_index :
@@ -529,24 +537,35 @@ void refresh_temp(int temp, int time, int step)
 {
     char tmp0[10], tmp1[10];
 
-    sprintf(tmp0,"%d°C", temp);
+    sprintf(tmp0,"%d °C", temp);
     sprintf(tmp1,"%dh%02d",(int)(time/60),(int)(time%60));
-    if (step < step_three)
+    if (step < step_five)
     {
         temp_reel_txt.setText(tmp0);
         time_reel_txt.setText(tmp1);
-    } else if (step < step_five)
-    {
-        temp_reel_txt_p5.setText(tmp0);
+    } else {
+        temp_finish_txt.setText(tmp0);
     }
 }
 
 void change_page(int step)
 {
+    if (step == step_two) {
+        phase1_pause_pg.show();
+        display_refresh_fire_value(program_index, step);
+    }
     if (step == step_three) {
         phase2_pg.show();
         display_refresh_fire_value(program_index, step);
     }
+    if (step == step_four) {
+        phase2_pause_pg.show();
+        display_refresh_fire_value(program_index, step);
+    }
     if (step == step_five)
         cooked_pg.show();
+}
+
+void flamme_display(int on_off_flag) {
+    button.setActive(on_off_flag);
 }

@@ -6,7 +6,7 @@
  */
 
 #include "encoder.h"
-#include "hardware/RotaryEncoder.h"
+#include "src/hardware/RotaryEncoder.h"
 
 
 // Setup a RoraryEncoder for pins A2 and A3:
