@@ -39,7 +39,7 @@ bool Nextion::init()
  */
 void Nextion::poll()
 {
-    char tmp[10];
+  //char tmp[10];
 
   while (m_serialPort.available() > 0)
   {
@@ -61,8 +61,8 @@ void Nextion::poll()
 
         if (buffer[4] == 0xFF && buffer[5] == 0xFF && buffer[6] == 0xFF)
         {
-            sprintf(tmp,"%02X %02X %02X",buffer[1], buffer[2], buffer[3]);
-            Serial.println(tmp);
+            //sprintf(tmp,"%02X %02X %02X",buffer[1], buffer[2], buffer[3]);
+            //Serial.println(tmp);
           ITouchableListItem *item = m_touchableList;
           while (item != NULL)
           {

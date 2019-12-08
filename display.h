@@ -11,7 +11,7 @@
 
 void init_nextion(void);
 void display_refresh(void);
-void refresh_temp(int temp, int time, int step);
+void refresh_temp_burn(int temp, int time, int step);
 void change_page(int step);
 void flamme_display(int on_off_flag);
 

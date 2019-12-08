@@ -74,6 +74,7 @@ float read_temp(void)
 }
 
 
+
 ISR(TIMER1_COMPA_vect){
     timeout_1s_flag = true;
 }

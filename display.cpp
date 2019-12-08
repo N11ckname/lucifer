@@ -19,11 +19,13 @@
 
 #include "encoder.h"
 #include "regulation.h"
+#include "display.h"
+#include "temperature.h"
 
 #include "src/hardware/EEPROM.h"
 #include "src/hardware/SoftwareSerial.h"
 
-#define BAUD 9600
+#define BAUD 19200
 
 SoftwareSerial nextionSerial(10, 11); // RX (blue), TX(yellow)
 
@@ -44,22 +46,22 @@ NextionPage             phase2_pg           (nex, 4, 0, "phase2");
 NextionPage             phase2_pause_pg     (nex, 5, 0, "phase2_pause");
 NextionPage             cooked_pg           (nex, 6, 0, "cooked");
 
-NextionButton 			norm_bt       (nex, 0, 2, "t0");
+NextionButton 			norm_bt             (nex, 0, 2, "t0");
 NextionButton 			trempe_bt			(nex, 0, 3, "t1");
 NextionButton 			recuit_bt			(nex, 0, 4, "t2");
-NextionText 				temp_pg0_txt	(nex, 0, 6, "t4");
+NextionText 			temp_pg0_txt	    (nex, 0, 6, "t4");
 //page 1,2,3
 
-NextionButton  			bt1_start					(nex, 1, 2, "button_start");
+NextionButton  			bt1_start			(nex, 1, 2, "button_start");
 NextionButton 			bt_temp_2_txt	    (nex, 1, 4, "bt0");
 NextionButton 			bt_temp_1_txt	    (nex, 1, 5, "bt1");
 NextionButton 			bt_palier2_txt		(nex, 1, 6, "bt2");
 NextionButton 			bt_pente2_txt	    (nex, 1, 7, "bt3");
-NextionButton				bt_pente1_txt	    (nex, 1, 8, "bt4");
+NextionButton			bt_pente1_txt	    (nex, 1, 8, "bt4");
 NextionButton 			bt_palier1_txt		(nex, 1, 9, "bt5");
-NextionPicture      bt_return         (nex, 1, 10, "button_return");
-NextionText 				temp_txt					(nex, 1, 11, "t4");
-NextionText 				time_total_txt		(nex, 1, 13, "t1");
+NextionPicture          bt_return           (nex, 1, 10, "button_return");
+NextionText 			temp_txt			(nex, 1, 11, "t4");
+NextionText 			time_total_txt		(nex, 1, 13, "t1");
 
 //page 4
 NextionText 			temp_2_txt			(nex, 2, 1, "t0");
@@ -78,8 +80,8 @@ NextionButton           bt_stop_p3          (nex, 3, 7, "t6");
 NextionButton           bt_stop_p4          (nex, 4, 7, "t6");
 NextionButton           bt_stop_p5          (nex, 5, 7, "t6");
 //page 6
-NextionText 			temp_finish_txt	(nex, 6, 1, "t4");
-NextionText 			return_txt			(nex, 6, 2, "t1");
+NextionText 			temp_finish_txt	    (nex, 6, 1, "t4");
+NextionButton 			return_txt			(nex, 6, 2, "t1");
 
 #define no_button_index 	0
 #define time_palier1_index 	1
@@ -119,6 +121,7 @@ int variable[nb_program][nb_variable] = {
 static void display_refresh_value(int forced,int program);
 static void display_encoder(int index,int program);
 static void display_refresh_fire_value(uint8_t program, int step);
+static void refresh_temp(void);
 static void check_value(int index, int program);
 static void save_value(int index, int program);
 static void read_value(int index, int program);
@@ -253,9 +256,8 @@ void bt_start_Callback(NextionEventType type, INextionTouchable *widget)
 	if (type == NEX_EVENT_PUSH)
 	{
 		Serial.println(F("start"));
-		phase1_pg.show();
 		button_index = 0;
-		display_refresh_fire_value(program_index, 0);
+		change_page(step_one);
 		burn_variable_init(program_index);
 		run_flag = 1;
 	}
@@ -311,6 +313,7 @@ void init_nextion(void)
 	bt_stop_p3.attachCallback(&bt_stop_Callback);
 	bt_stop_p4.attachCallback(&bt_stop_Callback);
 	bt_stop_p5.attachCallback(&bt_stop_Callback);
+	return_txt.attachCallback(&bt_stop_Callback);
 	Serial.println(F("init nextion end"));
 
 }
@@ -347,11 +350,11 @@ static void display_refresh_value(int forced,int program){
 				bt_pente2_txt.setText(tmp);
 				break;
 			case temp_1_index :
-				sprintf(tmp,"%d °C",variable[program][i]);
+				sprintf(tmp,"%d°C",variable[program][i]);
 				bt_temp_1_txt.setText(tmp);
 				break;
 			case temp_2_index :
-				sprintf(tmp,"%d °C",variable[program][i]);
+				sprintf(tmp,"%d°C",variable[program][i]);
 				bt_temp_2_txt.setText(tmp);
 				break;
 			default :
@@ -379,26 +382,24 @@ static void display_refresh_fire_value(uint8_t program, int step)
         return;
     else
         program = program - 1;
-    // if (step < step_two)
-    // {
-        sprintf(tmp,"%dh%02d",(int)(variable[program][time_palier1_index]/60),(int)(variable[program][time_palier1_index]%60));
-        palier1_txt.setText(tmp);
-        sprintf(tmp,"%dh%02d",(int)(variable[program][time_palier2_index]/60),(int)(variable[program][time_palier2_index]%60));
-        palier2_txt.setText(tmp);
-        sprintf(tmp,"%d °C",variable[program][temp_1_index]);
-        temp_1_txt.setText(tmp);
-        sprintf(tmp,"%d °C",variable[program][temp_2_index]);
-        temp_2_txt.setText(tmp);
-    // } else {
-    //     sprintf(tmp,"%dh%02d",(int)(variable[program][time_palier1_index]/60),(int)(variable[program][time_palier1_index]%60));
-    //     palier1_txt_p2.setText(tmp);
-    //     sprintf(tmp,"%dh%02d",(int)(variable[program][time_palier2_index]/60),(int)(variable[program][time_palier2_index]%60));
-    //     palier2_txt_p2.setText(tmp);
-    //     sprintf(tmp,"%d Â°C",variable[program][temp_1_index]);
-    //     temp_1_txt_p2.setText(tmp);
-    //     sprintf(tmp,"%d Â°C",variable[program][temp_2_index]);
-    //     temp_2_txt_p2.setText(tmp);
-    // }
+
+    sprintf(tmp,"%dh%02d",(int)(variable[program][time_palier1_index]/60),(int)(variable[program][time_palier1_index]%60));
+    palier1_txt.setText(tmp);
+    sprintf(tmp,"%dh%02d",(int)(variable[program][time_palier2_index]/60),(int)(variable[program][time_palier2_index]%60));
+    palier2_txt.setText(tmp);
+    sprintf(tmp,"%d°C",variable[program][temp_1_index]);
+    temp_1_txt.setText(tmp);
+    sprintf(tmp,"%d°C",variable[program][temp_2_index]);
+    temp_2_txt.setText(tmp);
+
+    if (step == step_one) {
+        sprintf(tmp,"%dh%02d",(int)(variable[program][pente1_index]/60),(int)(variable[program][pente1_index]%60));
+        pente1_txt.setText(tmp);
+    }
+    if (step == step_three) {
+        sprintf(tmp,"%dh%02d",(int)(variable[program][pente2_index]/60),(int)(variable[program][pente2_index]%60));
+        pente2_txt.setText(tmp);
+    }
 }
 
 void display_refresh(void){
@@ -414,9 +415,33 @@ void display_refresh(void){
     } else {
         display_encoder(button_index, program_index);
         display_refresh_value(false, program_index);
+        refresh_temp();
 	}
 
 
+}
+
+static void refresh_temp(void) {
+    int temp, page;
+    char tmp0[10];
+
+    if (!timeout_1s_flag)
+         return;
+    temp = int(read_temp());
+    page = nex.getCurrentPage();
+    //Serial.println(page);
+    sprintf(tmp0,"%d°C", temp);
+    switch (page) {
+    case 0:
+        temp_pg0_txt.setText(tmp0);
+        break;
+    case 1:
+        temp_txt.setText(tmp0);
+        break;
+    default:
+        break;
+    }
+    timeout_1s_flag = false;
 }
 
 static void display_encoder(int index, int program){
@@ -479,8 +504,8 @@ static void save_value(int index, int program) {
     EEPROM.write(add, (uint8_t)(variable[program][index] & 0xFF));
     EEPROM.write(add + 1, (uint8_t)((variable[program][index] & 0xFF00) >> 8));
     sei();
-    sprintf(tmp,"save %d %d %d %d",program, index, add, variable[program][index]);
-    Serial.println(tmp);
+    //sprintf(tmp,"save %d %d %d %d",program, index, add, variable[program][index]);
+    //Serial.println(tmp);
 }
 
 static void read_value(int index, int program)
@@ -495,8 +520,8 @@ static void read_value(int index, int program)
     tmp1 = EEPROM.read(add + 1);
     variable[program][index] = tmp0 + (tmp1 << 8);
     sei();
-    sprintf(tmp,"read %d %d %d %d",program, index, add, variable[program][index]);
-    Serial.println(tmp);
+    //sprintf(tmp,"read %d %d %d %d",program, index, add, variable[program][index]);
+    //Serial.println(tmp);
     check_value(index, program);
 }
 
@@ -533,11 +558,11 @@ static void burn_variable_init(int program)
     Serial.println(time_palier2_extern);
 }
 
-void refresh_temp(int temp, int time, int step)
+void refresh_temp_burn(int temp, int time, int step)
 {
     char tmp0[10], tmp1[10];
 
-    sprintf(tmp0,"%d °C", temp);
+    sprintf(tmp0,"%d°C", temp);
     sprintf(tmp1,"%dh%02d",(int)(time/60),(int)(time%60));
     if (step < step_five)
     {
@@ -550,20 +575,29 @@ void refresh_temp(int temp, int time, int step)
 
 void change_page(int step)
 {
-    if (step == step_two) {
+    switch (step) {
+    case step_one:
+        phase1_pg.show();
+        display_refresh_fire_value(program_index, step);
+        break;
+    case step_two:
         phase1_pause_pg.show();
         display_refresh_fire_value(program_index, step);
-    }
-    if (step == step_three) {
+        break;
+    case step_three:
         phase2_pg.show();
         display_refresh_fire_value(program_index, step);
-    }
-    if (step == step_four) {
+        break;
+    case step_four:
         phase2_pause_pg.show();
         display_refresh_fire_value(program_index, step);
-    }
-    if (step == step_five)
+        break;
+    case step_five:
         cooked_pg.show();
+        break;
+    default :
+        break;
+    }
 }
 
 void flamme_display(int on_off_flag) {
