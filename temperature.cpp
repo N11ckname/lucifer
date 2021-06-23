@@ -16,7 +16,7 @@ void init_temp_sensor(void)
 {
 
     maxthermo.begin();
-    maxthermo.setThermocoupleType(MAX31856_TCTYPE_K);
+    maxthermo.setThermocoupleType(MAX31856_TCTYPE_S);
     maxthermo.setNoiseFilter(MAX31856_NOISE_FILTER_50HZ);
 
 }
@@ -60,7 +60,7 @@ float read_temp(void)
     }
     else {
         temp = maxthermo.readThermocoupleTemperature();
-        temp_lpf = temp_lpf - ((temp_lpf - temp) * 0.25);
+        temp_lpf = temp;//temp_lpf - ((temp_lpf - temp) * 0.95);
 //        Serial.print(millis());
 //        Serial.print(" : ");
 //        Serial.print(maxthermo.readCJTemperature());

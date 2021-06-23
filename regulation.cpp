@@ -9,6 +9,7 @@
 #include "regulation.h"
 #include "display.h"
 #include <arduino.h>
+#include "src/hardware/PID_v1.h"
 
 int time_palier1_extern;
 int time_palier2_extern;
@@ -22,29 +23,50 @@ int step;
 #define ambiant_temp  30
 #define relais_pin     5
 
+
+
+//Specify the links and initial tuning parameters
+double Setpoint, Input, Output;
+double Kp=2, Ki=5, Kd=1;
+PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
+int WindowSize = 2000;
+unsigned long windowStartTime;
+
+void init_pid(void) {
+    myPID.SetOutputLimits(0, WindowSize);
+    windowStartTime = millis();
+    //turn the PID on
+    myPID.SetMode(AUTOMATIC);
+}
+
 void burn_regulation(void)
 {
      static int temp;
      static uint32_t run_time, next_time = 0, time_step_two, time_step_four;
-     static bool on_off_heat;
      int temp_consigne;
      char tmp[20];
 
      if (!timeout_1s_flag)
          return;
 
-     //temp = int(read_temp());
-     temp = temp + 10;
+     temp = int(read_temp());
+     //temp = temp + 10;
 
      run_time = millis() -  start_time;
      refresh_temp_burn(temp, int(run_time/60000), step);
 
      switch(step) {
      case step_one :
-         temp_consigne = (int)((float)(temp_1_extern) * (float)(run_time)/((float)(pente1_extern)*60000)) + ambiant_temp;
+         if (pente1_extern)
+             temp_consigne = (int)((float)(temp_1_extern) * (float)(run_time)/((float)(pente1_extern)*60000)) + ambiant_temp;
          if (temp_consigne > temp_1_extern)
              temp_consigne = temp_1_extern;
-         if (temp > temp_1_extern)
+
+        Setpoint = (double)(temp_consigne);
+        Input = (double)(temp);
+        myPID.Compute();
+
+         if ((temp > temp_1_extern) || (pente1_extern == 0))
          {
              time_step_two = run_time + (time_palier1_extern * 60000); //en ms
              step = step_two;
@@ -69,11 +91,12 @@ void burn_regulation(void)
          break;
 
      case step_three :
-         temp_consigne = (int)((float)(temp_2_extern-temp_1_extern) * (float)(run_time)/((float)(pente1_extern)*60000)) + temp_1_extern;
+         if (pente2_extern)
+             temp_consigne = (int)((float)(temp_2_extern-temp_1_extern) * (float)(run_time)/((float)(pente2_extern)*60000)) + temp_1_extern;
          if (temp_consigne > temp_2_extern)
              temp_consigne = temp_2_extern;
 
-         if (temp > temp_2_extern)
+         if ((temp > temp_2_extern) || (pente2_extern == 0))
          {
              time_step_four = run_time + (time_palier2_extern * 60000); //en ms
              step = step_four;
@@ -98,35 +121,44 @@ void burn_regulation(void)
          break;
 
      case step_five :
-         on_off_heat = false;
+         burn_stop();
+         flamme_display(false);
          break;
      default:
          break;
      }
-     if (temp > (temp_consigne))
-     {
-         on_off_heat = false;
-     }
-     if (temp < (temp_consigne) && (temp > 0))
-     {
-         on_off_heat = true;
-     }
+
      Serial.print(F("time "));
      Serial.print(run_time);
-     Serial.print(F(";Heat :"));
-     Serial.print(on_off_heat);
      Serial.print(F(";T :"));
      Serial.print(temp);
      Serial.print(F(";Tc :"));
      Serial.println(temp_consigne);
 
-     digitalWrite(relais_pin, on_off_heat);
-     flamme_display(on_off_heat);
      timeout_1s_flag = false;
 }
 
+void compute_pid(void) {
+    
+    static bool on_off_heat;
+
+    if ((millis() - windowStartTime) > WindowSize)
+    { //time to shift the Relay Window
+      windowStartTime += WindowSize;
+    }
+
+    if (Output < (millis() - windowStartTime))
+      on_off_heat = 0;
+    else
+      on_off_heat = 1;
+
+    digitalWrite(relais_pin, on_off_heat);
+    flamme_display(on_off_heat);
+
+}
 
 void burn_stop(void)
 {
     digitalWrite(relais_pin, false);
 }
+

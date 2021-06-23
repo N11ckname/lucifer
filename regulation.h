@@ -25,7 +25,9 @@ typedef enum {
     step_five
 };
 
+void init_pid(void);
 void burn_regulation(void);
+void compute_pid(void) ;
 void burn_stop(void);
 
 #endif /* REGULATION_H_ */

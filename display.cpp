@@ -350,11 +350,11 @@ static void display_refresh_value(int forced,int program){
 				bt_pente2_txt.setText(tmp);
 				break;
 			case temp_1_index :
-				sprintf(tmp,"%d°C",variable[program][i]);
+				sprintf(tmp,"%dï¿½C",variable[program][i]);
 				bt_temp_1_txt.setText(tmp);
 				break;
 			case temp_2_index :
-				sprintf(tmp,"%d°C",variable[program][i]);
+				sprintf(tmp,"%dï¿½C",variable[program][i]);
 				bt_temp_2_txt.setText(tmp);
 				break;
 			default :
@@ -387,9 +387,9 @@ static void display_refresh_fire_value(uint8_t program, int step)
     palier1_txt.setText(tmp);
     sprintf(tmp,"%dh%02d",(int)(variable[program][time_palier2_index]/60),(int)(variable[program][time_palier2_index]%60));
     palier2_txt.setText(tmp);
-    sprintf(tmp,"%d°C",variable[program][temp_1_index]);
+    sprintf(tmp,"%dï¿½C",variable[program][temp_1_index]);
     temp_1_txt.setText(tmp);
-    sprintf(tmp,"%d°C",variable[program][temp_2_index]);
+    sprintf(tmp,"%dï¿½C",variable[program][temp_2_index]);
     temp_2_txt.setText(tmp);
 
     if (step == step_one) {
@@ -412,6 +412,7 @@ void display_refresh(void){
     digitalWrite(7,toggle);
     if (run_flag) {
         burn_regulation();
+		compute_pid();
     } else {
         display_encoder(button_index, program_index);
         display_refresh_value(false, program_index);
@@ -430,7 +431,7 @@ static void refresh_temp(void) {
     temp = int(read_temp());
     page = nex.getCurrentPage();
     //Serial.println(page);
-    sprintf(tmp0,"%d°C", temp);
+    sprintf(tmp0,"%dï¿½C", temp);
     switch (page) {
     case 0:
         temp_pg0_txt.setText(tmp0);
@@ -556,13 +557,14 @@ static void burn_variable_init(int program)
     Serial.println(pente2_extern);
     Serial.print("Time 2 : ");
     Serial.println(time_palier2_extern);
+	init_pid();
 }
 
 void refresh_temp_burn(int temp, int time, int step)
 {
     char tmp0[10], tmp1[10];
 
-    sprintf(tmp0,"%d°C", temp);
+    sprintf(tmp0,"%dï¿½C", temp);
     sprintf(tmp1,"%dh%02d",(int)(time/60),(int)(time%60));
     if (step < step_five)
     {
