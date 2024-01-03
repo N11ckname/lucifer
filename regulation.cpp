@@ -23,13 +23,11 @@ int step;
 #define ambiant_temp  30
 #define relais_pin     5
 
-
-
 //Specify the links and initial tuning parameters
 double Setpoint, Input, Output;
-double Kp=2, Ki=5, Kd=1;
+double Kp=0.1, Ki=0, Kd=0;
 PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
-int WindowSize = 2000;
+int WindowSize = 1000;
 unsigned long windowStartTime;
 
 void init_pid(void) {
@@ -55,6 +53,7 @@ void burn_regulation(void)
      run_time = millis() -  start_time;
      refresh_temp_burn(temp, int(run_time/60000), step);
 
+    
      switch(step) {
      case step_one :
          if (pente1_extern)
@@ -80,6 +79,10 @@ void burn_regulation(void)
      case step_two :
          temp_consigne = temp_1_extern;
 
+        Setpoint = (double)(temp_consigne);
+        Input = (double)(temp);
+        myPID.Compute();
+        
          if (run_time > time_step_two)
          {
              step = step_three;
@@ -96,6 +99,11 @@ void burn_regulation(void)
          if (temp_consigne > temp_2_extern)
              temp_consigne = temp_2_extern;
 
+
+        Setpoint = (double)(temp_consigne);
+        Input = (double)(temp);
+        myPID.Compute();
+        
          if ((temp > temp_2_extern) || (pente2_extern == 0))
          {
              time_step_four = run_time + (time_palier2_extern * 60000); //en ms
@@ -109,8 +117,12 @@ void burn_regulation(void)
          break;
 
      case step_four :
-         temp_consigne = temp_2_extern;
+        temp_consigne = temp_2_extern;
 
+        Setpoint = (double)(temp_consigne);
+        Input = (double)(temp);
+        myPID.Compute();
+        
          if (run_time > time_step_four)
          {
              step = step_five;
@@ -128,33 +140,81 @@ void burn_regulation(void)
          break;
      }
 
-     Serial.print(F("time "));
+     Serial.print("burn_regulation");
+     Serial.print(", ");
      Serial.print(run_time);
-     Serial.print(F(";T :"));
+     Serial.print(", ");
      Serial.print(temp);
-     Serial.print(F(";Tc :"));
-     Serial.println(temp_consigne);
+     Serial.print(", ");
+     Serial.print(temp_consigne);
+     Serial.print(", ");
+     Serial.print(Output);
+     Serial.print(", ");
+     Serial.print(Kp);
+     Serial.print(", ");
+     Serial.print(Ki);
+     Serial.print(", ");
+     Serial.print(Kd);
+     Serial.print("\n");
+
+    //  Serial.print(F("time "));
+    //  Serial.print(run_time);
+    //  Serial.print(F(";T :"));
+    //  Serial.print(temp);
+    //  Serial.print(F(";Tc :"));
+    //  Serial.println(temp_consigne);
 
      timeout_1s_flag = false;
 }
 
 void compute_pid(void) {
-    
-    static bool on_off_heat;
-
+    // Assume Output [-1, 1];
+  
     if ((millis() - windowStartTime) > WindowSize)
     { //time to shift the Relay Window
       windowStartTime += WindowSize;
     }
 
-    if (Output < (millis() - windowStartTime))
+    bool on_off_heat = 0;
+    double window = 0;
+    if(Output < 0)
+    {
       on_off_heat = 0;
-    else
-      on_off_heat = 1;
+    }
+    else if(Output > 1)
+    {
+     on_off_heat = 1; 
+    }
+    else 
+    {
+      window = Output * WindowSize;
+      if ((millis() - windowStartTime) > window)
+        on_off_heat = 0;
+      else
+        on_off_heat = 1;
+    }
+
+     static int counter = 0;
+     counter++;
+
+     if(counter % 100 == 0)
+     {
+      counter = 0;
+      Serial.print("compute_pid");
+      Serial.print(", ");
+      Serial.print(millis());
+      Serial.print(", ");
+      Serial.print(Output);
+      Serial.print(", ");
+      Serial.print(window);
+      Serial.print(", ");
+      Serial.print(on_off_heat);
+      Serial.print("\n");
+     }
+
 
     digitalWrite(relais_pin, on_off_heat);
     flamme_display(on_off_heat);
-
 }
 
 void burn_stop(void)
