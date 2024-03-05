@@ -6,5 +6,3 @@ TODO:
 - test PID with current params and record output
 
 ## Setup
-
-## Python utility
