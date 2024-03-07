@@ -1,23 +1,6 @@
-Lucifer init
-init nextion end
-
 burn_regulation, run_time, temp, temp_consigne, output, Kp, Ki, Kd
 compute_pid, run_time, output, window, on_off_heat
 msg, 2015, petit_feu, 0
-1
-5
-6
-4
-start
-
-Start time : 37473
-Temp 1 : 170
-Pente 1 : 0
-Time 1 : 1
-Temp 2 : 700
-Pente 2 : 15
-Time 2 : 120
-step Two !!60595
 burn_regulation, 595, 137, 170, 3.30, 0.10, 0.00, 0.00
 burn_regulation, 1594, 137, 170, 3.30, 0.10, 0.00, 0.00
 compute_pid, 39356, 3.30, 0.00, 1
@@ -122,7 +105,6 @@ burn_regulation, 59589, 152, 170, 1.80, 0.10, 0.00, 0.00
 compute_pid, 97499, 1.80, 0.00, 1
 burn_regulation, 60589, 153, 170, 1.70, 0.10, 0.00, 0.00
 compute_pid, 98790, 1.70, 0.00, 1
-step Three !!
 burn_regulation, 61589, 153, 170, 1.70, 0.10, 0.00, 0.00
 burn_regulation, 62589, 154, 206, 5.20, 0.10, 0.00, 0.00
 compute_pid, 100688, 5.20, 0.00, 1
