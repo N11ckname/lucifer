@@ -38,11 +38,15 @@ def main(args_input):
     # csv_data.drop(columns=csv_data.columns[0], axis=1, inplace=True)
 
     print("{}".format(csv_data.head()))
-    
+
+    # csv_data.plot(x=' run_time', y=[' output', ' on_off_heat'])
+    # plt.title("Controller\n({})".format(os.path.basename(args.file_path)))
+
+
     csv_data.plot(x=' run_time', y=[' temp', ' temp_consigne'])
     plt.title("Temp vs Temp Consigne (Celsius)\n({})".format(os.path.basename(args.file_path)))
 
-    csv_data.plot(y=[' output', ' Kp', ' Ki', ' Kd'])
+    csv_data.plot(x=' run_time', y=[' output', ' Kp', ' Ki', ' Kd'])
     plt.title("Controller\n({})".format(os.path.basename(args.file_path)))
 
     plt.show()

@@ -10,6 +10,7 @@
 #include "display.h"
 #include <arduino.h>
 #include "src/hardware/PID_v1.h"
+#include "log.h"
 
 int time_palier1_extern;
 int time_palier2_extern;
@@ -140,20 +141,22 @@ void burn_regulation(void)
          break;
      }
 
+    log("daz");
+    
      Serial.print("burn_regulation");
-     Serial.print(", ");
+     Serial.print(",");
      Serial.print(run_time);
-     Serial.print(", ");
+     Serial.print(",");
      Serial.print(temp);
-     Serial.print(", ");
+     Serial.print(",");
      Serial.print(temp_consigne);
-     Serial.print(", ");
+     Serial.print(",");
      Serial.print(Output);
-     Serial.print(", ");
+     Serial.print(",");
      Serial.print(Kp);
-     Serial.print(", ");
+     Serial.print(",");
      Serial.print(Ki);
-     Serial.print(", ");
+     Serial.print(",");
      Serial.print(Kd);
      Serial.print("\n");
 
@@ -168,49 +171,41 @@ void burn_regulation(void)
 }
 
 void compute_pid(void) {
-    // Assume Output [-1, 1];
-  
+
     if ((millis() - windowStartTime) > WindowSize)
     { //time to shift the Relay Window
       windowStartTime += WindowSize;
     }
-
+    // Assume Output [-1, 1] but really [0, 1] since no action to cool down (potentially we could add a feedforward based on temp_cons)
+    double outputConstrained = constrain(Output, 0.0, 1.0);
     bool on_off_heat = 0;
-    double window = 0;
-    if(Output < 0)
+    double window = outputConstrained * WindowSize;
+    if ((millis() - windowStartTime) > window)
     {
       on_off_heat = 0;
     }
-    else if(Output > 1)
+    else
     {
-     on_off_heat = 1; 
-    }
-    else 
+      on_off_heat = 1;
+    }    
+
+    static int counter = 0;
+    counter++;
+
+    if(counter % 100 == 0)
     {
-      window = Output * WindowSize;
-      if ((millis() - windowStartTime) > window)
-        on_off_heat = 0;
-      else
-        on_off_heat = 1;
+    counter = 0;
+    Serial.print("compute_pid");
+    Serial.print(",");
+    Serial.print(millis());
+    Serial.print(",");
+    Serial.print(Output);
+    Serial.print(",");
+    Serial.print(window);
+    Serial.print(",");
+    Serial.print(on_off_heat);
+    Serial.print("\n");
     }
-
-     static int counter = 0;
-     counter++;
-
-     if(counter % 100 == 0)
-     {
-      counter = 0;
-      Serial.print("compute_pid");
-      Serial.print(", ");
-      Serial.print(millis());
-      Serial.print(", ");
-      Serial.print(Output);
-      Serial.print(", ");
-      Serial.print(window);
-      Serial.print(", ");
-      Serial.print(on_off_heat);
-      Serial.print("\n");
-     }
 
 
     digitalWrite(relais_pin, on_off_heat);
