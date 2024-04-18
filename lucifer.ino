@@ -5,6 +5,7 @@
 #include "display.h"
 #include "temperature.h"
 #include "regulation.h"
+#include "log.h"
 
 static int i = 0;
 
@@ -19,34 +20,25 @@ void setup()
 	pinMode(7,OUTPUT);
 	pinMode(5,OUTPUT);
 
-  Serial.print("\nburn_regulation");
-  Serial.print(",");
-  Serial.print("run_time");
-  Serial.print(",");
-  Serial.print("temp");
-  Serial.print(",");
-  Serial.print("temp_consigne");
-  Serial.print(",");
-  Serial.print("output");
-  Serial.print(",");
-  Serial.print("Kp");
-  Serial.print(",");
-  Serial.print("Ki");
-  Serial.print(",");
-  Serial.print("Kd");
-  Serial.print("\n");
-  
-  Serial.print("compute_pid");
-  Serial.print(",");
-  Serial.print("run_time");
-  Serial.print(",");
-  Serial.print("output");
-  Serial.print(",");
-  Serial.print("window");
-  Serial.print(",");
-  Serial.print("on_off_heat");
-  Serial.print("\n");
+  logging::log_header("REGULATION",
+                      "runtime_us",
+                      "temp",
+                      "temp_consigne",
+                      "output",
+                      "Kp",
+                      "Ki",
+                      "Kd");
 
+  logging::log_header("ACTUATOR",
+                      "runtime_us",
+                      "output_pid",
+                      "output_pid_constraint",
+                      "window_start_time_ms",
+                      "window_threshold_ms",
+                      "output",
+                      "on_off_heat");
+
+  logging::log_console_header("MSG_REGULATION");
 } // setup()
 
 // Read the current position of the encoder and print out when changed.

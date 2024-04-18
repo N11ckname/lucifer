@@ -1,23 +1,37 @@
 
-#ifndef LOGGING_H_
-#define LOGGING_H_
+#ifndef LOG_H
+#define LOG_H
 
-#include <arduino.h>
+#include <Arduino.h>
 #include <stdio.h>
+
+// #define LOGGING_ENABLE
 
 namespace logging
 {
+  enum class severity : uint8_t
+  {
+    INFO,
+    WARNING,
+    ERROR,
+    FATAL
+  };
+
   template<typename First>
   void log_backend(First first) {
+// #ifdef LOGGING_ENABLE
       Serial.print(first);
       Serial.print("\n");
+// #endif
   }
 
   template<typename First, typename ...Rest>
   void log_backend(First first, Rest ...rest) {
+// #ifdef LOGGING_ENABLE
       Serial.print(first);
       Serial.print(",");
       log_backend(rest...); // Call recursively for the rest of the arguments
+// #endif
   }
 
   template <typename ...Args>
@@ -32,23 +46,13 @@ namespace logging
     log_backend(name, micros(), args...);
   }
 
+  void log_console_header(const char * name);
 
-  void log_msg_header(const char * source)
+  template <typename Arg>
+  void log_console(const char * name, severity s, Arg arg)
   {
-    log_backend("msg", "timelog_us", "source", "severity", "payload");
+    log_backend(name, "timelog_us", static_cast<int>(s), arg);
   }
-
-  template <typename ...Args>
-  void log_msg(const char * source, Args ...args)
-  {
-    log_backend("msg     ", "timelog_us", args...);
-
-    log_backend(name, micros(), args...);
-  }
-
-
-      msg, timelog_us, source, severity, payload 
-
 }
 
-#endif /* LOGGING_H_ */
+#endif /* LOG_H */

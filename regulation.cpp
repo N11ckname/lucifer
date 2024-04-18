@@ -8,7 +8,7 @@
 #include "temperature.h"
 #include "regulation.h"
 #include "display.h"
-#include <arduino.h>
+#include <Arduino.h>
 #include "src/hardware/PID_v1.h"
 #include "log.h"
 
@@ -26,14 +26,17 @@ int step;
 
 //Specify the links and initial tuning parameters
 double Setpoint, Input, Output;
-double Kp=0.1, Ki=0, Kd=0;
+double Kp=10, Ki=0, Kd=0;
 PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
-int WindowSize = 1000;
-unsigned long windowStartTime;
+int window_size_ms = 1000;
+int max_output = 100;
+
+unsigned long window_start_time_ms;
 
 void init_pid(void) {
-    myPID.SetOutputLimits(0, WindowSize);
-    windowStartTime = millis();
+    myPID.SetOutputLimits(0, max_output);
+    window_start_time_ms = millis();
+
     //turn the PID on
     myPID.SetMode(AUTOMATIC);
 }
@@ -72,8 +75,7 @@ void burn_regulation(void)
              step = step_two;
              change_page(step);
              refresh_temp_burn(temp, int(run_time/60000), step);
-             Serial.print(F("step Two !!"));
-             Serial.println(time_step_two);
+             logging::log_console("MSG_REGULATION", logging::severity::INFO, "step two");
          }
          break;
 
@@ -87,7 +89,7 @@ void burn_regulation(void)
          if (run_time > time_step_two)
          {
              step = step_three;
-             Serial.println(F("step Three !!"));
+             logging::log_console("MSG_REGULATION", logging::severity::INFO, "step three");
              change_page(step);
              refresh_temp_burn(temp, int(run_time/60000), step);
          }
@@ -111,8 +113,7 @@ void burn_regulation(void)
              step = step_four;
              change_page(step);
              refresh_temp_burn(temp, int(run_time/60000), step);
-             Serial.print(F("step four !!"));
-             Serial.println(time_step_four);
+             logging::log_console("MSG_REGULATION", logging::severity::INFO, "step four");
          }
 
          break;
@@ -129,7 +130,7 @@ void burn_regulation(void)
              step = step_five;
              change_page(step);
              refresh_temp_burn(temp, int(run_time/60000), step);
-             Serial.println(F("step Five !!"));
+             logging::log_console("MSG_REGULATION", logging::severity::INFO, "step five");
          }
          break;
 
@@ -141,46 +142,30 @@ void burn_regulation(void)
          break;
      }
 
-    log("daz");
-    
-     Serial.print("burn_regulation");
-     Serial.print(",");
-     Serial.print(run_time);
-     Serial.print(",");
-     Serial.print(temp);
-     Serial.print(",");
-     Serial.print(temp_consigne);
-     Serial.print(",");
-     Serial.print(Output);
-     Serial.print(",");
-     Serial.print(Kp);
-     Serial.print(",");
-     Serial.print(Ki);
-     Serial.print(",");
-     Serial.print(Kd);
-     Serial.print("\n");
 
-    //  Serial.print(F("time "));
-    //  Serial.print(run_time);
-    //  Serial.print(F(";T :"));
-    //  Serial.print(temp);
-    //  Serial.print(F(";Tc :"));
-    //  Serial.println(temp_consigne);
+    logging::log("REGULATION",
+                 run_time,
+                 temp,
+                 temp_consigne,
+                 Output,
+                 Kp,
+                 Ki,
+                 Kd);
 
      timeout_1s_flag = false;
 }
 
 void compute_pid(void) {
 
-    if ((millis() - windowStartTime) > WindowSize)
+    if ((millis() - window_start_time_ms) > window_size_ms)
     { //time to shift the Relay Window
-      windowStartTime += WindowSize;
+      window_start_time_ms += window_size_ms;
     }
     // Assume Output [-1, 1] but really [0, 1] since no action to cool down (potentially we could add a feedforward based on temp_cons)
-    double outputConstrained = constrain(Output, 0.0, 1.0);
+    double output_pid_constrained = constrain(Output/static_cast<double>(max_output), 0.0, 1.0);
     bool on_off_heat = 0;
-    double window = outputConstrained * WindowSize;
-    if ((millis() - windowStartTime) > window)
+    double window_threshold_ms = output_pid_constrained * window_size_ms;
+    if ((millis() - window_start_time_ms) > window_threshold_ms)
     {
       on_off_heat = 0;
     }
@@ -194,19 +179,15 @@ void compute_pid(void) {
 
     if(counter % 100 == 0)
     {
-    counter = 0;
-    Serial.print("compute_pid");
-    Serial.print(",");
-    Serial.print(millis());
-    Serial.print(",");
-    Serial.print(Output);
-    Serial.print(",");
-    Serial.print(window);
-    Serial.print(",");
-    Serial.print(on_off_heat);
-    Serial.print("\n");
+      counter = 0;
+      logging::log("ACTUATOR",
+                   millis(),
+                   Output,
+                   output_pid_constrained, 
+                   window_start_time_ms,
+                   window_threshold_ms,
+                   on_off_heat);
     }
-
 
     digitalWrite(relais_pin, on_off_heat);
     flamme_display(on_off_heat);
