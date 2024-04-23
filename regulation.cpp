@@ -143,14 +143,14 @@ void burn_regulation(void)
      }
 
 
-    logging::log("REGULATION",
-                 run_time,
-                 temp,
-                 temp_consigne,
-                 Output,
-                 Kp,
-                 Ki,
-                 Kd);
+    // logging::log("REGULATION",
+    //              run_time,
+    //              temp,
+    //              temp_consigne,
+    //              Output,
+    //              Kp,
+    //              Ki,
+    //              Kd);
 
      timeout_1s_flag = false;
 }
@@ -180,13 +180,13 @@ void compute_pid(void) {
     if(counter % 100 == 0)
     {
       counter = 0;
-      logging::log("ACTUATOR",
-                   millis(),
-                   Output,
-                   output_pid_constrained, 
-                   window_start_time_ms,
-                   window_threshold_ms,
-                   on_off_heat);
+    //   logging::log("ACTUATOR",
+    //                millis(),
+    //                Output,
+    //                output_pid_constrained, 
+    //                window_start_time_ms,
+    //                window_threshold_ms,
+    //                on_off_heat);
     }
 
     digitalWrite(relais_pin, on_off_heat);
