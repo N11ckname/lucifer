@@ -20,27 +20,25 @@ void setup()
 	pinMode(7,OUTPUT);
 	pinMode(5,OUTPUT);
 
-  logging::log_header("daz");
+  logging::log_header("REGULATION",
+                      "runtime_us",
+                      "temp",
+                      "temp_consigne",
+                      "out",
+                      "Kp",
+                      "Ki",
+                      "Kd");
 
-  // logging::log_header("REGULATION",
-  //                     "runtime_us",
-  //                     "temp",
-  //                     "temp_consigne",
-  //                     "output",
-  //                     "Kp",
-  //                     "Ki",
-  //                     "Kd");
+  logging::log_header("ACTUATOR",
+                      "runtime_us",
+                      "out_pid",
+                      "out_pid_cons",
+                      "w_start_ms",
+                      "w_thresh_ms",
+                      "out",
+                      "on_off");
 
-  // logging::log_header("ACTUATOR",
-  //                     "runtime_us",
-  //                     "output_pid",
-  //                     "output_pid_constraint",
-  //                     "window_start_time_ms",
-  //                     "window_threshold_ms",
-  //                     "output",
-  //                     "on_off_heat");
-
-  // logging::log_console_header("MSG_REGULATION");
+  logging::log_console_header("MSG_REGULATION");
 } // setup()
 
 // Read the current position of the encoder and print out when changed.
