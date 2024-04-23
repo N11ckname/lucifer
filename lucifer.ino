@@ -20,6 +20,8 @@ void setup()
 	pinMode(7,OUTPUT);
 	pinMode(5,OUTPUT);
 
+  logging::log_header("daz");
+
   // logging::log_header("REGULATION",
   //                     "runtime_us",
   //                     "temp",
