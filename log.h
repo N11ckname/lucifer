@@ -19,19 +19,19 @@ namespace logging
 
   template<typename First>
   void log_backend(First first) {
-// #ifdef LOGGING_ENABLE
+#ifdef LOGGING_ENABLE
       Serial.print(first);
       Serial.print("\n");
-// #endif
+#endif()
   }
 
   template<typename First, typename ...Rest>
   void log_backend(First first, Rest ...rest) {
-// #ifdef LOGGING_ENABLE
+#ifdef LOGGING_ENABLE
       Serial.print(first);
       Serial.print(",");
       log_backend(rest...); // Call recursively for the rest of the arguments
-// #endif
+#endif()
   }
 
   template <typename ...Args>
