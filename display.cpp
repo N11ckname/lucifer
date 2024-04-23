@@ -161,11 +161,11 @@ void page1_Callback(NextionEventType type, INextionTouchable *widget)
 {
 	if (type == NEX_EVENT_PUSH) {
 		Serial.print("msg");
-		Serial.print(",");
+		Serial.print(", ");
 		Serial.print(millis());
-		Serial.print(",");
+		Serial.print(", ");
 		Serial.print("petit_feu");
-		Serial.print(",");
+		Serial.print(", ");
 		Serial.print(nex.getCurrentPage());
 		Serial.print("\n");
 	    prepare_feu_pg.show();
@@ -179,11 +179,11 @@ void page2_Callback(NextionEventType type, INextionTouchable *widget)
 {
 	if (type == NEX_EVENT_PUSH) {
 		Serial.print("msg");
-		Serial.print(",");
+		Serial.print(", ");
 		Serial.print(millis());
-		Serial.print(",");
+		Serial.print(", ");
 		Serial.print("grand_feu");
-		Serial.print(",");
+		Serial.print(", ");
 		Serial.print(nex.getCurrentPage());
 		Serial.print("\n");
 	    prepare_feu_pg.show();
@@ -197,11 +197,11 @@ void page3_Callback(NextionEventType type, INextionTouchable *widget)
 {
 	if (type == NEX_EVENT_PUSH){
 		Serial.print("msg");
-		Serial.print(",");
+		Serial.print(", ");
 		Serial.print(millis());
-		Serial.print(",");
+		Serial.print(", ");
 		Serial.print("recuit");
-		Serial.print(",");
+		Serial.print(", ");
 		Serial.print(nex.getCurrentPage());
 		Serial.print("\n");
 	    prepare_feu_pg.show();
