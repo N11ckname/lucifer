@@ -38,7 +38,7 @@ void setup()
                       "output",
                       "on_off_heat");
 
-  logging::log_console_header("MSG_REGULATION");
+  // logging::log_console_header("MSG_REGULATION");
 } // setup()
 
 // Read the current position of the encoder and print out when changed.

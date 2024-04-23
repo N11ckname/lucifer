@@ -75,7 +75,7 @@ void burn_regulation(void)
              step = step_two;
              change_page(step);
              refresh_temp_burn(temp, int(run_time/60000), step);
-             logging::log_console("MSG_REGULATION", logging::severity::INFO, "step two");
+            //  logging::log_console("MSG_REGULATION", logging::severity::INFO, "step two");
          }
          break;
 
@@ -113,7 +113,7 @@ void burn_regulation(void)
              step = step_four;
              change_page(step);
              refresh_temp_burn(temp, int(run_time/60000), step);
-             logging::log_console("MSG_REGULATION", logging::severity::INFO, "step four");
+            //  logging::log_console("MSG_REGULATION", logging::severity::INFO, "step four");
          }
 
          break;
@@ -130,7 +130,7 @@ void burn_regulation(void)
              step = step_five;
              change_page(step);
              refresh_temp_burn(temp, int(run_time/60000), step);
-             logging::log_console("MSG_REGULATION", logging::severity::INFO, "step five");
+            //  logging::log_console("MSG_REGULATION", logging::severity::INFO, "step five");
          }
          break;
 

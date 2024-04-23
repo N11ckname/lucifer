@@ -5,7 +5,7 @@
 #include <Arduino.h>
 #include <stdio.h>
 
-// #define LOGGING_ENABLE
+#define LOGGING_ENABLE
 
 namespace logging
 {
@@ -35,21 +35,21 @@ namespace logging
   }
 
   template <typename ...Args>
-  void log_header(const char * name, Args ...args)
+  void log_header(String name, Args ...args)
   {
     log_backend(name, "timelog_us", args...);
   }
 
   template <typename ...Args>
-  void log(const char * name, Args ...args)
+  void log(String name, Args ...args)
   {
     log_backend(name, micros(), args...);
   }
 
-  void log_console_header(const char * name);
+  void log_console_header(String name);
 
   template <typename Arg>
-  void log_console(const char * name, severity s, Arg arg)
+  void log_console(String name, severity s, Arg arg)
   {
     log_backend(name, "timelog_us", static_cast<int>(s), arg);
   }
