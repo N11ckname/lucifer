@@ -143,14 +143,14 @@ void burn_regulation(void)
      }
 
 
-    logging::log("REGULATION",
-                 run_time,
-                 temp,
-                 temp_consigne,
-                 Output,
-                 Kp,
-                 Ki,
-                 Kd);
+    // logging::log("REGULATION",
+    //              run_time,
+    //              temp,
+    //              temp_consigne,
+    //              Output,
+    //              Kp,
+    //              Ki,
+    //              Kd);
 
      timeout_1s_flag = false;
 }
