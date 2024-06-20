@@ -160,14 +160,14 @@ void init_variable(void)
 void page1_Callback(NextionEventType type, INextionTouchable *widget)
 {
 	if (type == NEX_EVENT_PUSH) {
-		Serial.print("msg");
-		Serial.print(", ");
-		Serial.print(millis());
-		Serial.print(", ");
-		Serial.print("petit_feu");
-		Serial.print(", ");
-		Serial.print(nex.getCurrentPage());
-		Serial.print("\n");
+		// Serial.print("msg");
+		// Serial.print(", ");
+		// Serial.print(millis());
+		// Serial.print(", ");
+		// Serial.print("petit_feu");
+		// Serial.print(", ");
+		// Serial.print(nex.getCurrentPage());
+		// Serial.print("\n");
 	    prepare_feu_pg.show();
 		program_index = petit_feu;
 		button_index = 0;
@@ -178,14 +178,14 @@ void page1_Callback(NextionEventType type, INextionTouchable *widget)
 void page2_Callback(NextionEventType type, INextionTouchable *widget)
 {
 	if (type == NEX_EVENT_PUSH) {
-		Serial.print("msg");
-		Serial.print(", ");
-		Serial.print(millis());
-		Serial.print(", ");
-		Serial.print("grand_feu");
-		Serial.print(", ");
-		Serial.print(nex.getCurrentPage());
-		Serial.print("\n");
+		// Serial.print("msg");
+		// Serial.print(", ");
+		// Serial.print(millis());
+		// Serial.print(", ");
+		// Serial.print("grand_feu");
+		// Serial.print(", ");
+		// Serial.print(nex.getCurrentPage());
+		// Serial.print("\n");
 	    prepare_feu_pg.show();
 		program_index = grand_feu;
 		button_index = 0;
@@ -196,14 +196,14 @@ void page2_Callback(NextionEventType type, INextionTouchable *widget)
 void page3_Callback(NextionEventType type, INextionTouchable *widget)
 {
 	if (type == NEX_EVENT_PUSH){
-		Serial.print("msg");
-		Serial.print(", ");
-		Serial.print(millis());
-		Serial.print(", ");
-		Serial.print("recuit");
-		Serial.print(", ");
-		Serial.print(nex.getCurrentPage());
-		Serial.print("\n");
+		// Serial.print("msg");
+		// Serial.print(", ");
+		// Serial.print(millis());
+		// Serial.print(", ");
+		// Serial.print("recuit");
+		// Serial.print(", ");
+		// Serial.print(nex.getCurrentPage());
+		// Serial.print("\n");
 	    prepare_feu_pg.show();
 		program_index = recuit;
 		button_index = 0;
@@ -217,7 +217,7 @@ void bt_palier1_Callback(NextionEventType type, INextionTouchable *widget)
 	if (type == NEX_EVENT_PUSH)
 	{
 		button_index = time_palier1_index;
-		Serial.println(button_index);
+		// Serial.println(button_index);
 	}
 }
 
@@ -226,7 +226,7 @@ void bt_palier2_Callback(NextionEventType type, INextionTouchable *widget)
 	if (type == NEX_EVENT_PUSH)
 	{
 		button_index = time_palier2_index;
-		Serial.println(button_index);
+		// Serial.println(button_index);
 	}
 }
 
@@ -236,7 +236,7 @@ void bt_pente1_Callback(NextionEventType type, INextionTouchable *widget)
 	if (type == NEX_EVENT_PUSH)
 	{
 		button_index = pente1_index;
-		Serial.println(button_index);
+		// Serial.println(button_index);
 	}
 }
 
@@ -245,7 +245,7 @@ void bt_pente2_Callback(NextionEventType type, INextionTouchable *widget)
 	if (type == NEX_EVENT_PUSH)
 	{
 		button_index = pente2_index;
-		Serial.println(button_index);
+		// Serial.println(button_index);
 	}
 }
 
@@ -254,7 +254,7 @@ void bt_temp_1_Callback(NextionEventType type, INextionTouchable *widget)
 	if (type == NEX_EVENT_PUSH)
 	{
 		button_index = temp_1_index;
-		Serial.println(button_index);
+		// Serial.println(button_index);
 	}
 }
 
@@ -264,7 +264,7 @@ void bt_temp_2_Callback(NextionEventType type, INextionTouchable *widget)
 	if (type == NEX_EVENT_PUSH)
 	{
 		button_index = temp_2_index;
-		Serial.println(button_index);
+		// Serial.println(button_index);
 	}
 }
 
@@ -273,7 +273,7 @@ void bt_start_Callback(NextionEventType type, INextionTouchable *widget)
 {
 	if (type == NEX_EVENT_PUSH)
 	{
-		Serial.println(F("start"));
+		// Serial.println(F("start"));
 		button_index = 0;
 		change_page(step_one);
 		burn_variable_init(program_index);
@@ -290,7 +290,7 @@ void bt_return_Callback(NextionEventType type, INextionTouchable *widget)
         burn_stop();
         run_flag = 0;
         accueil_pg.show();
-        Serial.println(F("return"));
+        //Serial.println(F("return"));
     }
 }
 
@@ -303,7 +303,7 @@ void bt_stop_Callback(NextionEventType type, INextionTouchable *widget)
 		burn_stop();
 		run_flag = 0;
 		accueil_pg.show();
-        Serial.println("stop");
+        //Serial.println("stop");
 	}
 }
 
@@ -332,7 +332,7 @@ void init_nextion(void)
 	bt_stop_p4.attachCallback(&bt_stop_Callback);
 	bt_stop_p5.attachCallback(&bt_stop_Callback);
 	return_txt.attachCallback(&bt_stop_Callback);
-	Serial.println(F("init nextion end"));
+	// Serial.println(F("init nextion end"));
 
 }
 
@@ -560,21 +560,21 @@ static void burn_variable_init(int program)
     temp_2_extern = variable[program][temp_2_index];
     start_time = millis();
     step = 0;
-    Serial.println();
-    Serial.print("Start time : ");
-    Serial.println(start_time);
-    Serial.print("Temp 1 : ");
-    Serial.println(temp_1_extern);
-    Serial.print("Pente 1 : ");
-    Serial.println(pente1_extern);
-    Serial.print("Time 1 : ");
-    Serial.println(time_palier1_extern);
-    Serial.print("Temp 2 : ");
-    Serial.println(temp_2_extern);
-    Serial.print("Pente 2 : ");
-    Serial.println(pente2_extern);
-    Serial.print("Time 2 : ");
-    Serial.println(time_palier2_extern);
+    //Serial.println();
+    //Serial.print("Start time : ");
+    //Serial.println(start_time);
+    //Serial.print("Temp 1 : ");
+    //Serial.println(temp_1_extern);
+    //Serial.print("Pente 1 : ");
+    //Serial.println(pente1_extern);
+    //Serial.print("Time 1 : ");
+    //Serial.println(time_palier1_extern);
+    //Serial.print("Temp 2 : ");
+    //Serial.println(temp_2_extern);
+    //Serial.print("Pente 2 : ");
+    //Serial.println(pente2_extern);
+    //Serial.print("Time 2 : ");
+    //Serial.println(time_palier2_extern);
 	init_pid();
 }
 

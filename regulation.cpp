@@ -75,7 +75,7 @@ void burn_regulation(void)
              step = step_two;
              change_page(step);
              refresh_temp_burn(temp, int(run_time/60000), step);
-            //  logging::log_console("MSG_REGULATION", logging::severity::INFO, "step two");
+             logging::log_console("MSG_REGULATION", logging::severity::INFO, "step two");
          }
          break;
 
@@ -89,7 +89,7 @@ void burn_regulation(void)
          if (run_time > time_step_two)
          {
              step = step_three;
-            //  logging::log_console("MSG_REGULATION", logging::severity::INFO, "step three");
+             logging::log_console("MSG_REGULATION", logging::severity::INFO, "step three");
              change_page(step);
              refresh_temp_burn(temp, int(run_time/60000), step);
          }
@@ -113,7 +113,7 @@ void burn_regulation(void)
              step = step_four;
              change_page(step);
              refresh_temp_burn(temp, int(run_time/60000), step);
-            //  logging::log_console("MSG_REGULATION", logging::severity::INFO, "step four");
+             logging::log_console("MSG_REGULATION", logging::severity::INFO, "step four");
          }
 
          break;
@@ -130,7 +130,7 @@ void burn_regulation(void)
              step = step_five;
              change_page(step);
              refresh_temp_burn(temp, int(run_time/60000), step);
-            //  logging::log_console("MSG_REGULATION", logging::severity::INFO, "step five");
+             logging::log_console("MSG_REGULATION", logging::severity::INFO, "step five");
          }
          break;
 
@@ -143,14 +143,14 @@ void burn_regulation(void)
      }
 
 
-    // logging::log("REGULATION",
-    //              run_time,
-    //              temp,
-    //              temp_consigne,
-    //              Output,
-    //              Kp,
-    //              Ki,
-    //              Kd);
+    logging::log("REGULATION",
+                 run_time,
+                 temp,
+                 temp_consigne,
+                 Output,
+                 Kp,
+                 Ki,
+                 Kd);
 
      timeout_1s_flag = false;
 }
@@ -180,13 +180,13 @@ void compute_pid(void) {
     if(counter % 100 == 0)
     {
       counter = 0;
-    //   logging::log("ACTUATOR",
-    //                millis(),
-    //                Output,
-    //                output_pid_constrained, 
-    //                window_start_time_ms,
-    //                window_threshold_ms,
-    //                on_off_heat);
+      logging::log("ACTUATOR",
+                   millis(),
+                   Output,
+                   output_pid_constrained, 
+                   window_start_time_ms,
+                   window_threshold_ms,
+                   on_off_heat);
     }
 
     digitalWrite(relais_pin, on_off_heat);
@@ -196,5 +196,6 @@ void compute_pid(void) {
 void burn_stop(void)
 {
     digitalWrite(relais_pin, false);
+    // logging::log_console("MSG_REGULATION", logging::severity::INFO, "burn_stop");
 }
 

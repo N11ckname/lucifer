@@ -9,9 +9,9 @@
 
 namespace logging
 {
-  enum class severity : uint8_t
+  enum class severity
   {
-    INFO,
+    INFO = 0,
     WARNING,
     ERROR,
     FATAL
@@ -28,25 +28,30 @@ namespace logging
   template<typename First, typename ...Rest>
   void log_backend(First first, Rest ...rest) {
 #ifdef LOGGING_ENABLE
+      // log_backend(first);
       Serial.print(first);
       Serial.print(",");
       log_backend(rest...); // Call recursively for the rest of the arguments
 #endif()
   }
 
-  template <typename ...Args>
-  void log_header(String name, Args ...args)
+  template <typename Arg, typename ...Args>
+  void log_header(Arg name, Args ...args)
   {
     log_backend(name, "timelog_us", args...);
   }
 
-  template <typename ...Args>
-  void log(String name, Args ...args)
+  template <typename Arg, typename ...Args>
+  void log(Arg name, Args ...args)
   {
     log_backend(name, micros(), args...);
   }
 
-  void log_console_header(String name);
+  template <typename Arg>
+  void log_console_header(Arg name)
+  {
+    log_backend(name, "timelog_us", "severity", "msg");
+  }
 
   template <typename Arg>
   void log_console(String name, severity s, Arg arg)
