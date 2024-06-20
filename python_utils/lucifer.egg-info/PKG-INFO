@@ -1,5 +1,0 @@
-Metadata-Version: 2.1
-Name: lucifer
-Version: 1.0b0
-Requires-Dist: pyserial
-Requires-Dist: numpy

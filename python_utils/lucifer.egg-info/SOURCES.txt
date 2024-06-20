@@ -1,8 +1,0 @@
-README.md
-setup.py
-lucifer.egg-info/PKG-INFO
-lucifer.egg-info/SOURCES.txt
-lucifer.egg-info/dependency_links.txt
-lucifer.egg-info/requires.txt
-lucifer.egg-info/top_level.txt
-ve/bin/activate_this.py
