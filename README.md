@@ -34,8 +34,17 @@ Run the code:
 python run_serial.py -s XXXXXX -f log_XXXX.csv
 ```
 
-**Note:**: To check the serial port available:
+## Notes:
+
+To check the serial port available:
 ```
 ls /dev/*
 ```
 
+If permission issues to open serial port:
+```
+sudo chmod a+rw /dev/XXXXX
+```
+
+For some reason looging form `display.cpp` makes the code crash.
+Maybe it interferes with display serial communication logic.
