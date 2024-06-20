@@ -56,7 +56,7 @@ namespace logging
   template <typename Arg>
   void log_console(String name, severity s, Arg arg)
   {
-    log_backend(name, "timelog_us", static_cast<int>(s), arg);
+    log_backend(name, micros(), static_cast<int>(s), arg);
   }
 }
 
