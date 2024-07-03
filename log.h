@@ -35,26 +35,26 @@ namespace logging
 #endif()
   }
 
-  template <typename Arg, typename ...Args>
-  void log_header(Arg name, Args ...args)
+  template <typename N, typename ...Args>
+  void log_header(N name, Args ...args)
   {
     log_backend(name, "timelog_us", args...);
   }
 
-  template <typename Arg, typename ...Args>
-  void log(Arg name, Args ...args)
+  template <typename N, typename ...Args>
+  void log(N name, Args ...args)
   {
     log_backend(name, micros(), args...);
   }
 
-  template <typename Arg>
-  void log_console_header(Arg name)
+  template <typename N>
+  void log_console_header(N name)
   {
     log_backend(name, "timelog_us", "severity", "msg");
   }
 
-  template <typename Arg>
-  void log_console(String name, severity s, Arg arg)
+  template <typename N, typename Arg>
+  void log_console(N name, severity s, Arg arg)
   {
     log_backend(name, micros(), static_cast<int>(s), arg);
   }
