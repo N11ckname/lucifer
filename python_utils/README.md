@@ -1,5 +1,10 @@
 # Python utility
 
+This is a python utility to create a log from Lucifer system.
+It:
+- open the serial port
+- write in a csv the string received
+
 ## Setup virtual environment:
 
 This is only required once to setup the environment
