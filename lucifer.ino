@@ -38,7 +38,6 @@ void setup()
                       "out_pid_cons",
                       "w_start_ms",
                       "w_thresh_ms",
-                      "out",
                       "on_off");
 
   logging::log_console_header("MSG_REGULATION");
