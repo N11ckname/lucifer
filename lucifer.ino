@@ -42,6 +42,7 @@ void setup()
 
   logging::log_console_header("MSG_REGULATION");
   logging::log_console_header("MSG_BUTTON");
+  logging::log_console_header("MSG_TEMP_READ");
 
 } // setup()
 

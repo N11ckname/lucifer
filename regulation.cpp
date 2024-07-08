@@ -18,6 +18,8 @@ int pente1_extern;
 int pente2_extern;
 int temp_1_extern;
 int temp_2_extern;
+int start_temp;
+
 unsigned long start_time;
 int step;
 
@@ -60,10 +62,16 @@ void burn_regulation(void)
     
      switch(step) {
      case step_one :
-         if (pente1_extern)
-             temp_consigne = (int)((float)(temp_1_extern) * (float)(run_time)/((float)(pente1_extern)*60000)) + ambiant_temp;
-         if (temp_consigne > temp_1_extern)
-             temp_consigne = temp_1_extern;
+        // This is not really correct as pente1_extern should take the current temperature into account as well
+        if (pente1_extern)
+        {
+            temp_consigne = (int)((float)(temp_1_extern) * (float)(run_time)/((float)(pente1_extern)*60000)) + start_temp;
+        }
+
+        if (temp_consigne > temp_1_extern)
+        {
+            temp_consigne = temp_1_extern;
+        }
 
         Setpoint = (double)(temp_consigne);
         Input = (double)(temp);
@@ -97,26 +105,29 @@ void burn_regulation(void)
          break;
 
      case step_three :
-         if (pente2_extern)
-             temp_consigne = (int)((float)(temp_2_extern-temp_1_extern) * (float)(run_time)/((float)(pente2_extern)*60000)) + temp_1_extern;
-         if (temp_consigne > temp_2_extern)
-             temp_consigne = temp_2_extern;
-
+        if (pente2_extern)
+        {
+            temp_consigne = (int)((float)(temp_2_extern-temp_1_extern) * (float)(run_time - time_step_two)/((float)(pente2_extern)*60000)) + temp_1_extern;
+        }
+        if (temp_consigne > temp_2_extern)
+        {
+            temp_consigne = temp_2_extern;
+        }
 
         Setpoint = (double)(temp_consigne);
         Input = (double)(temp);
         myPID.Compute();
         
-         if ((temp > temp_2_extern) || (pente2_extern == 0))
-         {
-             time_step_four = run_time + (time_palier2_extern * 60000); //en ms
-             step = step_four;
-             change_page(step);
-             refresh_temp_burn(temp, int(run_time/60000), step);
-             logging::log_console("MSG_REGULATION", logging::severity::INFO, "step four");
-         }
+        if ((temp > temp_2_extern) || (pente2_extern == 0))
+        {
+            time_step_four = run_time + (time_palier2_extern * 60000); //en ms
+            step = step_four;
+            change_page(step);
+            refresh_temp_burn(temp, int(run_time/60000), step);
+            logging::log_console("MSG_REGULATION", logging::severity::INFO, "step four");
+        }
 
-         break;
+        break;
 
      case step_four :
         temp_consigne = temp_2_extern;
