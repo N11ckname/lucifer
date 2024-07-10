@@ -65,7 +65,7 @@ void burn_regulation(void)
         // This is not really correct as pente1_extern should take the current temperature into account as well
         if (pente1_extern)
         {
-            temp_consigne = (int)((float)(temp_1_extern) * (float)(run_time)/((float)(pente1_extern)*60000)) + start_temp;
+            temp_consigne = (int)((float)(temp_1_extern - start_temp) * (float)(run_time)/((float)(pente1_extern)*60000)) + start_temp;
         }
 
         if (temp_consigne > temp_1_extern)
