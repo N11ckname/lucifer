@@ -559,7 +559,7 @@ static void burn_variable_init(int program)
     temp_1_extern = variable[program][temp_1_index];
     temp_2_extern = variable[program][temp_2_index];
     start_time = millis();
-    start_temp = int(read_temp());
+    // start_temp = int(read_temp());
     step = 0;
     //Serial.println();
     //Serial.print("Start time : ");
