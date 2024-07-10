@@ -18,7 +18,7 @@ int pente1_extern;
 int pente2_extern;
 int temp_1_extern;
 int temp_2_extern;
-int start_temp;
+// int start_temp;
 
 unsigned long start_time;
 int step;
@@ -65,7 +65,7 @@ void burn_regulation(void)
         // This is not really correct as pente1_extern should take the current temperature into account as well
         if (pente1_extern)
         {
-            temp_consigne = (int)((float)(temp_1_extern) * (float)(run_time)/((float)(pente1_extern)*60000)) + start_temp;
+            temp_consigne = (int)((float)(temp_1_extern) * (float)(run_time)/((float)(pente1_extern)*60000)) + ambiant_temp;
         }
 
         if (temp_consigne > temp_1_extern)

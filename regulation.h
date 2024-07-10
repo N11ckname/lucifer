@@ -15,7 +15,7 @@ extern int pente2_extern;
 extern int temp_1_extern;
 extern int temp_2_extern;
 extern unsigned long start_time;
-extern int start_temp;
+// extern int start_temp;
 extern int step;
 
 typedef enum {
