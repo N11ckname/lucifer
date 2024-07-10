@@ -6,7 +6,6 @@
  */
 
 #include "src/hardware/Adafruit_MAX31856.h"
-#include "log.h"
 
 // Use software SPI: CS, DI, DO, CLK
 Adafruit_MAX31856 maxthermo = Adafruit_MAX31856(8, 9, 12, 13);
@@ -48,49 +47,15 @@ float read_temp(void)
     uint8_t fault = maxthermo.readFault();
 
     if (fault) {
-        logging::log_console("MSG_TEMP_READ", logging::severity::ERROR, fault);
-
         Serial.println(fault);
-        if (fault & MAX31856_FAULT_CJRANGE)
-        {
-            logging::log_console("MSG_TEMP_READ", logging::severity::ERROR, "Cold Junction Range Fault");
-        }
-
-        if (fault & MAX31856_FAULT_TCRANGE)
-        {
-            logging::log_console("MSG_TEMP_READ", logging::severity::ERROR, "Thermocouple Range Fault");
-        }
-        
-        if (fault & MAX31856_FAULT_CJHIGH)
-        {
-            logging::log_console("MSG_TEMP_READ", logging::severity::ERROR, "Cold Junction High Fault");
-        }
-
-        if (fault & MAX31856_FAULT_CJLOW) 
-        {
-            logging::log_console("MSG_TEMP_READ", logging::severity::ERROR, "Cold Junction Low Fault");
-        }
-
-        if (fault & MAX31856_FAULT_TCHIGH)
-        {
-            logging::log_console("MSG_TEMP_READ", logging::severity::ERROR, "Thermocouple High Fault");
-        }
-
-        if (fault & MAX31856_FAULT_TCLOW)  
-        {
-            logging::log_console("MSG_TEMP_READ", logging::severity::ERROR, "Thermocouple Low Fault");
-        }
-
-        if (fault & MAX31856_FAULT_OVUV)   
-        {
-            logging::log_console("MSG_TEMP_READ", logging::severity::ERROR, "Over/Under Voltage Fault");
-        }
-
-        if (fault & MAX31856_FAULT_OPEN)  
-        {
-            logging::log_console("MSG_TEMP_READ", logging::severity::ERROR, "Thermocouple Open Fault");
-        }
-
+        if (fault & MAX31856_FAULT_CJRANGE) Serial.println(F("Cold Junction Range Fault"));
+        if (fault & MAX31856_FAULT_TCRANGE) Serial.println(F("Thermocouple Range Fault"));
+        if (fault & MAX31856_FAULT_CJHIGH)  Serial.println(F("Cold Junction High Fault"));
+        if (fault & MAX31856_FAULT_CJLOW)   Serial.println(F("Cold Junction Low Fault"));
+        if (fault & MAX31856_FAULT_TCHIGH)  Serial.println(F("Thermocouple High Fault"));
+        if (fault & MAX31856_FAULT_TCLOW)   Serial.println(F("Thermocouple Low Fault"));
+        if (fault & MAX31856_FAULT_OVUV)    Serial.println(F("Over/Under Voltage Fault"));
+        if (fault & MAX31856_FAULT_OPEN)    Serial.println(F("Thermocouple Open Fault"));
         return (0.0);
     }
     else {
